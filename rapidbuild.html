@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RapidBuild Workshop — Prompt Handbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --tcs-primary: #1A1A2E;
+  --tcs-accent: #E94560;
+  --tcs-blue: #0F3460;
+  --tcs-light: #16213E;
+  --gold: #FFB81C;
+  --bg: #F5F7FA;
+  --card: #FFFFFF;
+  --text: #1A2B3C;
+  --text-secondary: #4A5568;
+  --text-muted: #8492A6;
+  --border: #E2E8F0;
+  --radius: 12px;
+  --success: #2E7D32;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+
+/* ─── WELCOME SCREEN ─── */
+.welcome-screen {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, var(--tcs-primary) 0%, var(--tcs-blue) 50%, var(--tcs-light) 100%);
+  padding:32px;
+}
+.welcome-card {
+  background:var(--card); border-radius:16px; padding:48px;
+  max-width:640px; width:100%; box-shadow:0 24px 64px rgba(0,0,0,0.3);
+}
+.welcome-card .logo {
+  font-size:14px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+  color:var(--tcs-accent); margin-bottom:8px;
+}
+.welcome-card h1 {
+  font-size:32px; font-weight:800; margin-bottom:8px; color:var(--tcs-primary);
+}
+.welcome-card .subtitle {
+  font-size:16px; color:var(--text-secondary); margin-bottom:32px; line-height:1.6;
+}
+.form-group { margin-bottom:24px; }
+.form-group label {
+  display:block; font-size:13px; font-weight:600; margin-bottom:8px;
+  color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;
+}
+.form-group input, .form-group textarea {
+  width:100%; padding:14px 16px; border:2px solid var(--border); border-radius:10px;
+  font-family:'Inter',sans-serif; font-size:15px; color:var(--text);
+  transition:border-color 0.2s, box-shadow 0.2s; background:#FAFBFC;
+}
+.form-group input:focus, .form-group textarea:focus {
+  outline:none; border-color:var(--tcs-accent);
+  box-shadow:0 0 0 3px rgba(233,69,96,0.1); background:white;
+}
+.form-group textarea { resize:vertical; min-height:120px; line-height:1.6; }
+.form-group .hint { font-size:12px; color:var(--text-muted); margin-top:6px; }
+
+.btn-start {
+  width:100%; padding:16px; background:var(--tcs-accent); color:white;
+  border:none; border-radius:10px; font-size:16px; font-weight:700;
+  cursor:pointer; transition:all 0.2s; letter-spacing:0.5px;
+}
+.btn-start:hover { background:#D63652; transform:translateY(-1px); box-shadow:0 8px 24px rgba(233,69,96,0.3); }
+.btn-start:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+/* ─── WORKSHOP SCREEN ─── */
+.workshop-screen { display:none; }
+.workshop-screen.active { display:block; }
+.welcome-screen.hidden { display:none; }
+
+.header {
+  background:linear-gradient(135deg, var(--tcs-primary) 0%, var(--tcs-blue) 100%);
+  color:white; padding:40px 32px; text-align:center;
+}
+.header .back-btn {
+  position:absolute; left:24px; top:24px; background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2); color:white; padding:8px 16px;
+  border-radius:8px; font-size:13px; cursor:pointer; font-family:'Inter',sans-serif;
+  transition:background 0.2s;
+}
+.header .back-btn:hover { background:rgba(255,255,255,0.2); }
+.header .export-btn {
+  position:absolute; right:24px; top:24px; z-index:10;
+  background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3);
+  padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600;
+  cursor:pointer; transition:all 0.2s; font-family:inherit;
+}
+.header .export-btn:hover { background:rgba(255,255,255,0.25); }
+.header { position:relative; }
+.header h1 { font-size:32px; font-weight:800; margin-bottom:6px; }
+.header .customer-name { font-size:20px; opacity:0.9; margin-bottom:4px; }
+.header .meta {
+  display:inline-flex; gap:16px; background:rgba(255,255,255,0.1);
+  padding:10px 24px; border-radius:8px; font-size:14px; margin-top:16px;
+}
+
+.container { max-width:900px; margin:0 auto; padding:32px; }
+
+/* Challenge context card */
+.context-card {
+  background:linear-gradient(135deg, #FFF8E1 0%, #FFF3CD 100%);
+  border-left:4px solid var(--gold); border-radius:0 var(--radius) var(--radius) 0;
+  padding:20px 24px; margin-bottom:28px;
+}
+.context-card h3 { font-size:14px; font-weight:700; color:#8B6914; margin-bottom:8px; }
+.context-card p { font-size:14px; color:#5D4E00; white-space:pre-wrap; }
+
+.how-to {
+  background:var(--card); border-radius:var(--radius); padding:24px 28px;
+  margin-bottom:28px; box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  border-left:4px solid var(--tcs-accent);
+}
+.how-to h2 { font-size:16px; margin-bottom:12px; color:var(--tcs-primary); }
+.how-to ol { padding-left:20px; font-size:14px; color:var(--text-secondary); }
+.how-to li { margin-bottom:6px; }
+
+.toc {
+  background:var(--card); border-radius:var(--radius); padding:28px 32px;
+  margin-bottom:32px; box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.toc h2 { font-size:18px; margin-bottom:16px; color:var(--tcs-primary); }
+.toc-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.toc a {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; border-radius:8px; text-decoration:none;
+  color:var(--text); font-size:14px; font-weight:500; transition:background 0.2s;
+}
+.toc a:hover { background:var(--bg); }
+.toc .num {
+  width:28px; height:28px; border-radius:50%;
+  background:var(--tcs-primary); color:white;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; flex-shrink:0;
+}
+
+.stage {
+  background:var(--card); border-radius:var(--radius);
+  margin-bottom:24px; box-shadow:0 2px 8px rgba(0,0,0,0.06); overflow:hidden;
+}
+.stage-header {
+  padding:24px 32px; cursor:pointer;
+  display:flex; align-items:center; gap:16px;
+  border-bottom:1px solid var(--border);
+}
+.stage-header:hover { background:#FAFBFC; }
+.stage-num {
+  width:48px; height:48px; border-radius:12px;
+  background:var(--tcs-primary); color:white;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:800; flex-shrink:0;
+}
+.stage-title { font-size:20px; font-weight:700; }
+.stage-time { font-size:13px; color:var(--text-muted); margin-top:2px; }
+.stage-toggle { margin-left:auto; font-size:20px; color:var(--text-muted); transition:transform 0.3s; }
+.stage.open .stage-toggle { transform:rotate(180deg); }
+
+.stage-body { padding:28px 32px; display:none; }
+.stage.open .stage-body { display:block; }
+
+.note {
+  background:#FFF8E1; border-left:4px solid var(--gold);
+  padding:14px 18px; border-radius:0 8px 8px 0;
+  margin-bottom:20px; font-size:14px; color:#5D4E00;
+}
+
+.prompt-block {
+  background:#0D1117; color:#C9D1D9; border-radius:8px;
+  padding:24px; margin:16px 0; font-family:'JetBrains Mono',monospace;
+  font-size:13px; line-height:1.8; overflow-x:auto;
+  position:relative; white-space:pre-wrap;
+}
+.copy-btn {
+  position:absolute; top:12px; right:12px;
+  padding:6px 14px; background:rgba(255,255,255,0.1);
+  color:#C9D1D9; border:1px solid rgba(255,255,255,0.2);
+  border-radius:6px; font-size:12px; cursor:pointer; font-family:'Inter',sans-serif;
+}
+.copy-btn:hover { background:rgba(255,255,255,0.2); }
+
+h3.section-head { font-size:16px; font-weight:700; margin:20px 0 10px; color:var(--tcs-primary); }
+h3.section-head::before { content:''; display:inline-block; width:4px; height:18px; background:var(--tcs-primary); border-radius:2px; margin-right:10px; vertical-align:middle; }
+
+.look-for, .refinement {
+  background:var(--bg); border-radius:8px; padding:18px 20px; margin:12px 0;
+}
+.look-for h4, .refinement h4 { font-size:14px; font-weight:700; margin-bottom:8px; }
+.look-for li, .refinement li { font-size:14px; margin-bottom:6px; color:var(--text-secondary); }
+.look-for { border-left:4px solid var(--tcs-primary); }
+.refinement { border-left:4px solid var(--gold); }
+
+.placeholder-tag {
+  background:#FFEEF0; color:#D32F2F; padding:2px 8px; border-radius:4px;
+  font-weight:600; font-size:12px; border:1px solid #FFCDD2;
+}
+
+.footer {
+  text-align:center; padding:32px; font-size:13px; color:var(--text-muted);
+}
+
+@media print {
+  body { background:white !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .welcome-screen, .copy-btn, .back-btn, .export-btn, .toc-grid { display:none !important; }
+  .workshop-screen { display:block !important; }
+  .header { position:relative !important; break-after:page; padding:60px 32px !important; }
+  .header h1 { font-size:36px !important; }
+  .header .customer-name { font-size:24px !important; margin-top:12px; }
+  .header .meta { font-size:14px !important; }
+  .container { padding:0 20px !important; }
+  .context-card { break-after:avoid; }
+  .stage { break-inside:avoid; page-break-inside:avoid; margin-bottom:24px !important; }
+  .stage-body { display:block !important; max-height:none !important; }
+  .stage-header { cursor:default; }
+  .prompt-block { 
+    break-inside:avoid; page-break-inside:avoid;
+    white-space:pre-wrap !important; font-size:11px !important;
+    padding:16px !important; margin:8px 0 !important;
+    border:1px solid #ccc !important; background:#f9f9f9 !important;
+    color:#1a1a1a !important;
+  }
+  .stage-title { font-size:16px !important; }
+  .footer { break-before:auto; font-size:10px; }
+}
+@media(max-width:768px) {
+  .container { padding:16px; }
+  .toc-grid { grid-template-columns:1fr; }
+  .header h1 { font-size:24px; }
+  .welcome-card { padding:32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ WELCOME SCREEN ═══════════ -->
+<div class="welcome-screen" id="welcomeScreen">
+  <div class="welcome-card">
+    <div class="logo">TCS AI Practice</div>
+    <h1>🏗️ RapidBuild Workshop</h1>
+    <p class="subtitle">AI-powered ideation-to-prototype in 60 minutes. Enter your customer details below to generate a tailored prompt handbook.</p>
+
+    <div class="form-group">
+      <label>Customer / Company Name</label>
+      <input type="text" id="customerName" placeholder="e.g. Stockland, ANZ Bank, Telstra..." autofocus>
+    </div>
+
+    <div class="form-group">
+      <label>Industry</label>
+      <input type="text" id="customerIndustry" placeholder="e.g. Property Development, Banking, Telecommunications...">
+    </div>
+
+    <div class="form-group">
+      <label>Business Challenge</label>
+      <textarea id="challengeText" placeholder="Describe the business challenge in detail. What problem are they trying to solve? Who is affected? What's the impact?"></textarea>
+      <div class="hint">Be specific — the more context you provide, the better the AI prompts will be tailored.</div>
+    </div>
+
+    <div class="form-group">
+      <label>Additional Context <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <textarea id="additionalContext" placeholder="Any extra details: target users, regulatory constraints, existing systems, geography, timeline expectations..." style="min-height:80px"></textarea>
+    </div>
+
+    <button class="btn-start" id="btnStart" onclick="startWorkshop()">Generate Workshop Handbook →</button>
+  </div>
+</div>
+
+<!-- ═══════════ WORKSHOP SCREEN ═══════════ -->
+<div class="workshop-screen" id="workshopScreen">
+
+  <div class="header">
+    <button class="back-btn" onclick="goBack()">← Back to Setup</button>
+    <button class="export-btn" onclick="exportPDF()" title="Export as PDF">📄 Export PDF</button>
+    <h1>🏗️ RapidBuild Workshop</h1>
+    <div class="customer-name" id="headerCustomer"></div>
+    <div class="meta">
+      <span id="headerIndustry"></span>
+      <span>⏱ 1 hour</span>
+      <span>📋 6 Stages</span>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="context-card">
+      <h3>📌 Business Challenge</h3>
+      <p id="contextChallenge"></p>
+    </div>
+
+    <div class="how-to">
+      <h2>📖 How to Use This Handbook</h2>
+      <ol>
+        <li><strong>Copy</strong> the prompt from each stage</li>
+        <li><strong>Paste</strong> into the <strong>same conversation thread</strong> in your LLM (Claude, GPT-4, Gemini, etc.)</li>
+        <li><strong>Review</strong> the output as a team</li>
+        <li><strong>Refine</strong> — edit, add context, challenge assumptions</li>
+        <li><strong>Move to next stage</strong> — the AI already has context from previous stages. No need to paste previous output (unless a placeholder asks for a team decision).</li>
+      </ol>
+    </div>
+
+    <div class="toc">
+      <h2>📑 Table of Contents</h2>
+      <div class="toc-grid">
+        <a href="#stage1" onclick="openStage(0)"><span class="num">1</span> Research & Discovery</a>
+        <a href="#stage2" onclick="openStage(1)"><span class="num">2</span> Root-Cause Analysis</a>
+        <a href="#stage3" onclick="openStage(2)"><span class="num">3</span> AI Idea Generation</a>
+        <a href="#stage4" onclick="openStage(3)"><span class="num">4</span> One-Page Pilot Brief</a>
+        <a href="#stage5" onclick="openStage(4)"><span class="num">5</span> Build the Application</a>
+        <a href="#stage6" onclick="openStage(5)"><span class="num">6</span> Deploy & Review</a>
+      </div>
+    </div>
+
+    <!-- STAGE 1 -->
+    <div class="stage open" id="stage1">
+      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stage-num">1</div>
+        <div><div class="stage-title">Research & Discovery</div><div class="stage-time">⏱ 10 minutes</div></div>
+        <div class="stage-toggle">▼</div>
+      </div>
+      <div class="stage-body">
+        <div class="note">💡 <strong>Facilitator:</strong> This stage maps the landscape. Give participants a few minutes to read the output, then discuss. Challenge the AI's assumptions with real-world experience.</div>
+        <h3 class="section-head">Prompt</h3>
+        <div class="prompt-block" id="prompt1"><button class="copy-btn" onclick="copyPrompt('prompt1')">📋 Copy</button></div>
+        <div class="look-for">
+          <h4>🎯 What to Look For</h4>
+          <ul>
+            <li>Are the personas realistic for this business?</li>
+            <li>Do the pain points match what the team actually experiences?</li>
+            <li>Are the success metrics measurable and achievable?</li>
+            <li>Anything the AI missed that the team knows from experience?</li>
+          </ul>
+        </div>
+        <div class="refinement">
+          <h4>✏️ Team Discussion Questions</h4>
+          <ul>
+            <li>"Which persona feels the most pain today?"</li>
+            <li>"What workarounds are we already using that the AI didn't mention?"</li>
+            <li>"Are these the right KPIs, or are we measuring the wrong things?"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 2 -->
+    <div class="stage" id="stage2">
+      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stage-num">2</div>
+        <div><div class="stage-title">Root-Cause Analysis (Five Whys)</div><div class="stage-time">⏱ 10 minutes</div></div>
+        <div class="stage-toggle">▼</div>
+      </div>
+      <div class="stage-body">
+        <div class="note">💡 <strong>Facilitator:</strong> The Five Whys technique often reveals systemic root causes. Encourage the team to push back — "Is that really why?"</div>
+        <h3 class="section-head">Prompt</h3>
+        <div class="prompt-block" id="prompt2"><button class="copy-btn" onclick="copyPrompt('prompt2')">📋 Copy</button></div>
+        <div class="look-for">
+          <h4>🎯 What to Look For</h4>
+          <ul>
+            <li>Do the root causes ring true, or is the AI being too generic?</li>
+            <li>Are there root causes the team already knows about?</li>
+            <li>Is the test plan realistic — do we actually have access to that data?</li>
+          </ul>
+        </div>
+        <div class="refinement">
+          <h4>✏️ Team Discussion Questions</h4>
+          <ul>
+            <li>"Which root cause, if solved, would have the biggest cascading effect?"</li>
+            <li>"Do we already have the data to test these hypotheses?"</li>
+            <li>"What organisational barriers exist to accessing this data?"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 3 -->
+    <div class="stage" id="stage3">
+      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stage-num">3</div>
+        <div><div class="stage-title">AI Idea Generation & Clustering</div><div class="stage-time">⏱ 10 minutes</div></div>
+        <div class="stage-toggle">▼</div>
+      </div>
+      <div class="stage-body">
+        <div class="note">💡 <strong>Facilitator:</strong> This is the creative stage. After the AI generates ideas, use dot-voting: each person gets 3 dots to vote on favourites across all clusters.</div>
+        <h3 class="section-head">Prompt</h3>
+        <div class="prompt-block" id="prompt3"><button class="copy-btn" onclick="copyPrompt('prompt3')">📋 Copy</button></div>
+        <div class="look-for">
+          <h4>🎯 What to Look For</h4>
+          <ul>
+            <li>Are ideas specific enough to be actionable?</li>
+            <li>Does the scoring feel right?</li>
+            <li>Which idea gets the team most excited?</li>
+          </ul>
+        </div>
+        <div class="refinement">
+          <h4>✏️ Team Activity: Dot-Voting</h4>
+          <ul>
+            <li>Give each participant 3 sticky dots (or digital votes)</li>
+            <li>Vote on favourite ideas across all clusters</li>
+            <li>Tally results and discuss the winner</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 4 -->
+    <div class="stage" id="stage4">
+      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stage-num">4</div>
+        <div><div class="stage-title">One-Page Pilot Brief</div><div class="stage-time">⏱ 10 minutes</div></div>
+        <div class="stage-toggle">▼</div>
+      </div>
+      <div class="stage-body">
+        <div class="note">💡 <strong>Facilitator:</strong> The output should be detailed enough that a developer could build from it. Review each section critically.</div>
+        <h3 class="section-head">Prompt</h3>
+        <div class="prompt-block" id="prompt4"><button class="copy-btn" onclick="copyPrompt('prompt4')">📋 Copy</button></div>
+        <div class="look-for">
+          <h4>🎯 What to Look For</h4>
+          <ul>
+            <li>Is the user flow realistic for how this company actually works?</li>
+            <li>Does the sample data feel authentic?</li>
+            <li>Are the guardrails sufficient?</li>
+            <li>Would the success metrics prove value to leadership?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 5 -->
+    <div class="stage" id="stage5">
+      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stage-num">5</div>
+        <div><div class="stage-title">Build the Application</div><div class="stage-time">⏱ 15 minutes</div></div>
+        <div class="stage-toggle">▼</div>
+      </div>
+      <div class="stage-body">
+        <div class="note">💡 <strong>Facilitator:</strong> This generates a full prototype. Copy the code, save as <code>index.html</code>, open in browser. Review as a team.</div>
+        <h3 class="section-head">Prompt</h3>
+        <div class="prompt-block" id="prompt5"><button class="copy-btn" onclick="copyPrompt('prompt5')">📋 Copy</button></div>
+        <div class="look-for">
+          <h4>🎯 What to Look For</h4>
+          <ul>
+            <li>Does it look like something this company would actually ship?</li>
+            <li>Is the language appropriate for end users?</li>
+            <li>Does the data visualisation tell the right story?</li>
+          </ul>
+        </div>
+        <div class="refinement">
+          <h4>✏️ Team Activity</h4>
+          <ul>
+            <li>Open prototype in browser and walk through the flow together</li>
+            <li>Each person writes: 1 thing that works, 1 thing to change, 1 thing missing</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 6 -->
+    <div class="stage" id="stage6">
+      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stage-num">6</div>
+        <div><div class="stage-title">Deploy & Review</div><div class="stage-time">⏱ 5 minutes</div></div>
+        <div class="stage-toggle">▼</div>
+      </div>
+      <div class="stage-body">
+        <div class="note">💡 <strong>Facilitator:</strong> Wrap-up stage. Create the deployment note and demo script for stakeholder presentation.</div>
+        <h3 class="section-head">Prompt</h3>
+        <div class="prompt-block" id="prompt6"><button class="copy-btn" onclick="copyPrompt('prompt6')">📋 Copy</button></div>
+        <div class="look-for">
+          <h4>🎯 Final Team Discussion</h4>
+          <ul>
+            <li>"Would this solve the problem we started with?"</li>
+            <li>"Who needs to see this first?"</li>
+            <li>"What's the one thing that would make or break adoption?"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Generated by <strong>RapidBuild Pipeline</strong> 🏗️</p>
+      <p>TCS AI Practice</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── Prompt Templates ───
+// {{CUSTOMER}}, {{INDUSTRY}}, {{CHALLENGE}}, {{ADDITIONAL}} are replaced dynamically
+
+const prompts = {
+  1: `You are a research aide for a technology innovation workshop.
+
+**Company:** {{CUSTOMER}} — operating in the {{INDUSTRY}} industry.
+
+**Business Challenge:** {{CHALLENGE}}
+{{ADDITIONAL_BLOCK}}
+Deliver the following in structured format:
+
+1. **Key Personas** — List 4–6 personas (role, seniority, department) most affected by this challenge. Include BOTH internal staff AND external stakeholders (customers, partners, suppliers).
+
+2. **Top Pains** — Rank the top 5 pain points these personas experience today, with:
+   - Severity (High / Medium / Low)
+   - Frequency (Daily / Weekly / Monthly)
+   - Who feels it most (which persona)
+
+3. **Current Workarounds** — For each pain point, describe the manual or semi-manual workaround currently in use.
+
+4. **Success Metrics** — Define 4–6 measurable KPIs that would indicate the challenge is solved. Include current estimated baselines and target values.
+
+5. **3 Insights** — Non-obvious, data-informed insights specific to this industry and challenge domain.
+
+6. **1 Key Risk** — The single biggest risk to solving this challenge (regulatory, technical, organisational, or data-related). Explain why and how it could derail the solution.
+
+Format with clear headers and tables where appropriate.`,
+
+  2: `You are conducting a root-cause analysis for {{CUSTOMER}}.
+
+Using the top 3 pain points (by severity and frequency) from the Research & Discovery output above:
+
+1. **Five Whys Drill-Down** — Run a Five Whys analysis for each to uncover the root cause. Show each "Why?" step clearly.
+
+2. **3 Root-Cause Hypotheses** per pain (9 total). For each hypothesis, specify:
+   - **Hypothesis statement** — A clear, testable claim
+   - **Disproof evidence** — What data or observation would INVALIDATE this hypothesis?
+   - **Minimum data cut** — The smallest dataset needed to test it
+   - **Data owner(s)** — Who at {{CUSTOMER}} (or their partners) holds this data?
+
+3. **Root-Cause Map** — A structured text diagram linking:
+   Pain Points → Why Chains → Root Causes
+   Show how multiple pains may share common root causes.
+
+4. **Test Plan** — A table with columns:
+   | Hypothesis | Test Method | Data Required | Owner | Timeline | Priority |
+
+5. **Privacy & Regulatory Constraints** — Identify any privacy laws, industry regulations, or contractual constraints that apply to the data involved. Flag anything that could limit data collection or sharing.
+
+Format with clear headers. Use tables for the test plan.`,
+
+  3: `You are an AI product strategist generating solution ideas for {{CUSTOMER}}.
+
+**Context:** {{CHALLENGE}} Use the root causes from Stage 2 and the key insights from Stage 1 (already in this conversation) to generate AI-driven solution ideas clustered into three categories:
+
+### CLUSTER 1: Machine Learning (ML) / Computer Vision (CV)
+Ideas leveraging classic Machine Learning techniques image recognition, document parsing, OCR, visual monitoring, or anomaly detection.
+- Generate **3–5 concrete ideas** with a one-line description
+- Score each: Impact (1–5), Feasibility (1–5), Speed-to-Pilot (1–5)
+- **Star (★)** the single highest-priority idea
+
+### CLUSTER 2: RAG / Co-Pilot
+Ideas using retrieval-augmented generation, conversational AI, knowledge assistants, or intelligent Q&A.
+- Generate **3–5 concrete ideas**
+- Score and star as above
+
+### CLUSTER 3: Tasking & Automation
+Ideas for workflow automation, intelligent scheduling, auto-notifications, trigger-based actions, or predictive systems.
+- Generate **3–5 concrete ideas**
+- Score and star as above
+
+### SCORING GUIDE
+- **Impact (1–5):** How much does this solve the core challenge?
+- **Feasibility (1–5):** Can {{CUSTOMER}} build/buy this with existing data and tech?
+- **Speed-to-Pilot (1–5):** Can a working prototype be delivered in <4 weeks?
+
+### OUTPUT
+1. A scored table for each cluster
+2. The ★ top idea per cluster (with brief justification)
+3. **Final Recommendation:** The single best idea overall to take to pilot, with a 3-sentence justification.
+
+Be specific to {{INDUSTRY}} — no generic "AI dashboard" ideas.`,
+
+  4: `You are a product manager writing a one-page pilot brief for {{CUSTOMER}}.
+
+**Recommended Idea from Stage 3:**
+[PASTE THE WINNING IDEA AND ITS JUSTIFICATION HERE — this is a team decision from the dot-voting exercise]
+
+Using the personas from Stage 1 and root causes from Stage 2 (already in this conversation), produce a structured **one-page pilot brief** with ALL of the following sections:
+
+1. **Target User(s)** — Primary and secondary personas with their role and daily workflow.
+
+2. **Problem Statement** — 2–3 sentences rooted in the Five Whys analysis. Include business impact in dollars or days.
+
+3. **Success Metrics & Baselines** — 4-6 measurable KPIs:
+   | KPI | Current Baseline | Target | Measurement Method |
+
+4. **Target Uplift** — Single headline improvement.
+
+5. **Key Flow (5–7 Steps)** — Numbered user journey from trigger to outcome.
+
+6. **Screens / Components** — Each UI screen with description and key interactive elements.
+
+7. **Sample UI Copy** — Actual text, labels, button copy, tooltips, notification templates. Include messages for different status states.
+
+8. **Representative Sample Data** — Realistic dataset with 4-6 sample records at different stages. Use realistic names, dates, and a mix of statuses.
+
+9. **Integration Points** — External systems, APIs, or data sources. Note which are simulated for the prototype.
+
+10. **Guardrails** — Privacy compliance, uncertainty handling, low-confidence fallbacks, human-in-the-loop checkpoints, bias considerations.
+
+Format clearly. Must be detailed enough for a developer to build a working prototype.`,
+
+  5: `You are a senior full-stack developer building a prototype for {{CUSTOMER}}.
+
+Using the pilot brief from Stage 4 (already in this conversation), build a **fully functional, single-page web application** with these constraints:
+
+### TECHNICAL
+- Single file: HTML5, CSS3, vanilla JavaScript in one .html file
+- No external dependencies except Google Fonts (Inter or DM Sans)
+- Responsive: desktop-first, mobile-friendly
+
+### BRANDING — {{CUSTOMER}}
+- Research {{CUSTOMER}}'s brand colours and visual identity
+- Use their actual brand palette (primary, secondary, accent colours)
+- If uncertain, use professional colours appropriate for the {{INDUSTRY}} industry
+- Typography: Clean, modern, trustworthy
+- Tone: Professional and appropriate for the target users
+
+### FUNCTIONALITY
+- Ingest and display sample data from pilot brief
+- Implement complete key flow (5-7 steps) as interactive UI
+- Data visualisation: charts, progress indicators, breakdowns as appropriate
+- Notification/communication preview component
+- AI Q&A component (simulated responses)
+- Export/summary generation
+- Clear status indicators with colour coding
+
+### DESIGN QUALITY
+- Production-grade — will be shown to {{CUSTOMER}} executives
+- No generic AI aesthetics
+- Think: a real product {{CUSTOMER}} would proudly show their stakeholders
+- Subtle animations, clear hierarchy, accessible contrast
+
+Output the complete HTML file only.`,
+
+  6: `I have a single-file HTML5 prototype built for {{CUSTOMER}} to address: {{CHALLENGE}}
+
+Provide:
+1. **Deployment Note** (3–5 sentences): What was built, the core value proposition, and how to use it.
+2. **Demo Script** (5 steps): A talk-track for presenting this to {{CUSTOMER}} leadership in 5 minutes.
+3. **Known Limitations** of the prototype (be honest — what's simulated, what needs real data).
+4. **Next Steps** for moving from prototype to pilot:
+   - What data connections are needed?
+   - What approvals are required?
+   - Estimated timeline for a real pilot
+   - Team/resources needed
+5. **3 Questions to Ask {{CUSTOMER}}** that would validate whether this solution addresses their real needs.`
+};
+
+// ─── State ───
+let workshopData = {};
+
+function startWorkshop() {
+  const name = document.getElementById('customerName').value.trim();
+  const industry = document.getElementById('customerIndustry').value.trim();
+  const challenge = document.getElementById('challengeText').value.trim();
+  const additional = document.getElementById('additionalContext').value.trim();
+
+  if (!name || !challenge) {
+    alert('Please provide at least the customer name and business challenge.');
+    return;
+  }
+
+  workshopData = { name, industry: industry || 'their', challenge, additional };
+
+  // Populate header
+  document.getElementById('headerCustomer').textContent = `Customer: ${name}`;
+  document.getElementById('headerIndustry').textContent = `📍 ${industry || name}`;
+  document.getElementById('contextChallenge').textContent = challenge + (additional ? '\n\nAdditional context: ' + additional : '');
+
+  // Generate prompts
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById('prompt' + i);
+    const additionalBlock = additional ? `\n**Additional Context:** ${additional}\n` : '';
+    const text = prompts[i]
+      .replace(/\{\{CUSTOMER\}\}/g, name)
+      .replace(/\{\{INDUSTRY\}\}/g, industry || 'their')
+      .replace(/\{\{CHALLENGE\}\}/g, challenge)
+      .replace(/\{\{ADDITIONAL\}\}/g, additional)
+      .replace(/\{\{ADDITIONAL_BLOCK\}\}/g, additionalBlock);
+    
+    // Preserve the copy button
+    const btn = el.querySelector('.copy-btn');
+    el.textContent = text;
+    el.prepend(btn);
+  }
+
+  // Switch screens
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('workshopScreen').classList.add('active');
+  window.scrollTo(0, 0);
+
+  // Save to sessionStorage for back navigation
+  sessionStorage.setItem('rapidbuild_data', JSON.stringify(workshopData));
+}
+
+function goBack() {
+  document.getElementById('welcomeScreen').classList.remove('hidden');
+  document.getElementById('workshopScreen').classList.remove('active');
+  window.scrollTo(0, 0);
+}
+
+function openStage(idx) {
+  const stage = document.querySelectorAll('.stage')[idx];
+  stage.classList.add('open');
+  stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function exportPDF() {
+  // Expand all stages so they appear in print
+  document.querySelectorAll('.stage-body').forEach(b => {
+    b.style.display = 'block';
+    b.style.maxHeight = 'none';
+  });
+  // Small delay to let DOM update, then print
+  setTimeout(() => {
+    window.print();
+  }, 300);
+}
+
+function copyPrompt(id) {
+  const el = document.getElementById(id);
+  const text = el.textContent.replace('📋 Copy', '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.querySelector('.copy-btn');
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy', 2000);
+  });
+}
+
+// Restore from URL params first, then sessionStorage as fallback
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const urlCompany = params.get('company');
+  const urlIndustry = params.get('industry');
+  const urlChallenge = params.get('challenge');
+  const urlContext = params.get('context');
+
+  if (urlCompany || urlIndustry) {
+    // URL params take priority — pre-populate from URL
+    if (urlCompany) document.getElementById('customerName').value = urlCompany;
+    if (urlIndustry) document.getElementById('customerIndustry').value = urlIndustry;
+    if (urlChallenge) document.getElementById('challengeText').value = urlChallenge;
+    if (urlContext) document.getElementById('additionalContext').value = urlContext;
+  } else {
+    // Fall back to sessionStorage
+    const saved = sessionStorage.getItem('rapidbuild_data');
+    if (saved) {
+      const data = JSON.parse(saved);
+      document.getElementById('customerName').value = data.name;
+      document.getElementById('customerIndustry').value = data.industry;
+      document.getElementById('challengeText').value = data.challenge;
+      document.getElementById('additionalContext').value = data.additional || '';
+    }
+  }
+
+  // Enable/disable start button
+  const check = () => {
+    document.getElementById('btnStart').disabled = 
+      !document.getElementById('customerName').value.trim() || 
+      !document.getElementById('challengeText').value.trim();
+  };
+  document.getElementById('customerName').addEventListener('input', check);
+  document.getElementById('challengeText').addEventListener('input', check);
+  check();
+});
+</script>
+</body>
+</html>
