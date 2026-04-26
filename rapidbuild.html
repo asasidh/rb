@@ -24,25 +24,29 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
 
-/* ─── WELCOME SCREEN ─── */
-.welcome-screen {
+/* ─── ACCESS / WELCOME SCREENS ─── */
+.access-screen, .welcome-screen {
   min-height:100vh; display:flex; align-items:center; justify-content:center;
   background:linear-gradient(135deg, var(--tcs-primary) 0%, var(--tcs-blue) 50%, var(--tcs-light) 100%);
   padding:32px;
 }
-.welcome-card {
+.welcome-card, .access-card {
   background:var(--card); border-radius:16px; padding:48px;
   max-width:640px; width:100%; box-shadow:0 24px 64px rgba(0,0,0,0.3);
 }
-.welcome-card .logo {
+.access-card { max-width:420px; }
+.welcome-card .logo, .access-card .logo {
   font-size:14px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
   color:var(--tcs-accent); margin-bottom:8px;
 }
-.welcome-card h1 {
+.welcome-card h1, .access-card h1 {
   font-size:32px; font-weight:800; margin-bottom:8px; color:var(--tcs-primary);
 }
-.welcome-card .subtitle {
+.welcome-card .subtitle, .access-card .subtitle {
   font-size:16px; color:var(--text-secondary); margin-bottom:32px; line-height:1.6;
+}
+.access-error {
+  min-height:20px; margin-top:10px; font-size:13px; color:var(--tcs-accent);
 }
 .form-group { margin-bottom:24px; }
 .form-group label {
@@ -72,7 +76,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
 /* ─── WORKSHOP SCREEN ─── */
 .workshop-screen { display:none; }
 .workshop-screen.active { display:block; }
-.welcome-screen.hidden { display:none; }
+.access-screen.hidden, .welcome-screen.hidden { display:none; }
 
 .header {
   background:linear-gradient(135deg, var(--tcs-primary) 0%, var(--tcs-blue) 100%);
@@ -169,6 +173,29 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
   margin-bottom:20px; font-size:14px; color:#5D4E00;
 }
 
+.stage-alert {
+  background:#E8F1FF; border-left:4px solid var(--tcs-primary);
+  padding:14px 18px; border-radius:0 8px 8px 0;
+  margin-bottom:20px; font-size:14px; color:#173B67;
+}
+
+.tool-choice {
+  border:1px solid var(--border); border-radius:8px;
+  padding:16px 18px; margin:16px 0 20px; background:#FAFBFC;
+}
+.tool-choice legend {
+  font-size:14px; font-weight:700; color:var(--tcs-primary);
+  padding:0 4px;
+}
+.tool-option {
+  display:flex; gap:10px; align-items:flex-start;
+  padding:12px 0; cursor:pointer;
+}
+.tool-option + .tool-option { border-top:1px solid var(--border); }
+.tool-option input { margin-top:3px; }
+.tool-option strong { display:block; font-size:14px; color:var(--text); margin-bottom:3px; }
+.tool-option span { display:block; font-size:13px; color:var(--text-secondary); line-height:1.5; }
+
 .prompt-block {
   background:#0D1117; color:#C9D1D9; border-radius:8px;
   padding:24px; margin:16px 0; font-family:'JetBrains Mono',monospace;
@@ -205,7 +232,7 @@ h3.section-head::before { content:''; display:inline-block; width:4px; height:18
 
 @media print {
   body { background:white !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .welcome-screen, .copy-btn, .back-btn, .export-btn, .toc-grid { display:none !important; }
+  .access-screen, .welcome-screen, .copy-btn, .back-btn, .export-btn, .toc-grid { display:none !important; }
   .workshop-screen { display:block !important; }
   .header { position:relative !important; break-after:page; padding:60px 32px !important; }
   .header h1 { font-size:36px !important; }
@@ -230,14 +257,30 @@ h3.section-head::before { content:''; display:inline-block; width:4px; height:18
   .container { padding:16px; }
   .toc-grid { grid-template-columns:1fr; }
   .header h1 { font-size:24px; }
-  .welcome-card { padding:32px 24px; }
+  .welcome-card, .access-card { padding:32px 24px; }
 }
 </style>
 </head>
 <body>
 
+<!-- ═══════════ ACCESS SCREEN ═══════════ -->
+<div class="access-screen" id="accessScreen">
+  <div class="access-card">
+    <p class="subtitle">Enter today&apos;s 6-character workshop access code to continue.</p>
+
+    <div class="form-group">
+      <label>Access Code</label>
+      <input type="text" id="accessCode" maxlength="6" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false">
+      <div class="hint">Ask the facilitator if you do not have the code.</div>
+      <div class="access-error" id="accessError" aria-live="polite"></div>
+    </div>
+
+    <button class="btn-start" id="btnAccess" onclick="unlockWorkshop()">Continue →</button>
+  </div>
+</div>
+
 <!-- ═══════════ WELCOME SCREEN ═══════════ -->
-<div class="welcome-screen" id="welcomeScreen">
+<div class="welcome-screen hidden" id="welcomeScreen">
   <div class="welcome-card">
     <div class="logo">TCS AI Practice</div>
     <h1>🏗️ RapidBuild Workshop</h1>
@@ -436,6 +479,18 @@ h3.section-head::before { content:''; display:inline-block; width:4px; height:18
       </div>
       <div class="stage-body">
         <div class="note">💡 <strong>Facilitator:</strong> This generates a full prototype. Copy the code, save as <code>index.html</code>, open in browser. Review as a team.</div>
+        <div class="stage-alert">⚠️ <strong>Facilitator check:</strong> Confirm which tool participants should use before they copy the Stage 5 prompt.</div>
+        <fieldset class="tool-choice">
+          <legend>Choose your Stage 5 build path</legend>
+          <label class="tool-option">
+            <input type="radio" name="stage5Tool" value="same" checked onchange="updateStage5Prompt()">
+            <span><strong>Option 1: Continue in the same tool</strong>Choose this if you are continuing this stage using the same tool used in steps 1-4.</span>
+          </label>
+          <label class="tool-option">
+            <input type="radio" name="stage5Tool" value="coding" onchange="updateStage5Prompt()">
+            <span><strong>Option 2: Switch to a coding-specific tool</strong>Choose this if you are switching to a different coding-specific tool at this stage, such as Codex.</span>
+          </label>
+        </fieldset>
         <h3 class="section-head">Prompt</h3>
         <div class="prompt-block" id="prompt5"><button class="copy-btn" onclick="copyPrompt('prompt5')">📋 Copy</button></div>
         <div class="look-for">
@@ -638,7 +693,7 @@ Output the complete HTML file only.`,
 
 Provide:
 1. **Deployment Note** (3–5 sentences): What was built, the core value proposition, and how to use it.
-2. **Demo Script** (5 steps): A talk-track for presenting this to {{CUSTOMER}} leadership in 5 minutes.
+2. **Demo Script** (5 minutes): A talk-track for presenting this to {{CUSTOMER}} leadership in 5 minutes.
 3. **Known Limitations** of the prototype (be honest — what's simulated, what needs real data).
 4. **Next Steps** for moving from prototype to pilot:
    - What data connections are needed?
@@ -648,8 +703,118 @@ Provide:
 5. **3 Questions to Ask {{CUSTOMER}}** that would validate whether this solution addresses their real needs.`
 };
 
+const stage5Prompts = {
+  same: prompts[5],
+  coding: `You are a senior full-stack developer building a prototype for {{CUSTOMER}}.
+
+The detailed prototype specifications for what needs to be built will be included as an attachment or at the end of these general guidelines.
+
+Before you build:
+1. Read the attached or pasted Stage 4 pilot brief/spec carefully.
+2. Treat that spec as the source of truth for users, workflow, screens, sample data, integrations, guardrails, and UI copy.
+3. If the Stage 4 spec is missing or incomplete, ask me for it before writing code.
+
+Build a **fully functional, single-page web application** with these constraints:
+
+### TECHNICAL
+- Single file: HTML5, CSS3, vanilla JavaScript in one .html file
+- No external dependencies except Google Fonts (Inter or DM Sans)
+- Responsive: desktop-first, mobile-friendly
+
+### BRANDING — {{CUSTOMER}}
+- Research {{CUSTOMER}}'s brand colours and visual identity if you have browsing access
+- Use their actual brand palette where possible
+- If uncertain, use professional colours appropriate for the {{INDUSTRY}} industry
+- Typography: Clean, modern, trustworthy
+- Tone: Professional and appropriate for the target users
+
+### FUNCTIONALITY
+- Ingest and display sample data from the Stage 4 spec
+- Implement the complete key flow from the Stage 4 spec as interactive UI
+- Data visualisation: charts, progress indicators, breakdowns as appropriate
+- Notification/communication preview component
+- AI Q&A component with simulated responses
+- Export/summary generation
+- Clear status indicators with colour coding
+
+### DESIGN QUALITY
+- Production-grade — will be shown to {{CUSTOMER}} executives
+- No generic AI aesthetics
+- Think: a real product {{CUSTOMER}} would proudly show their stakeholders
+- Subtle animations, clear hierarchy, accessible contrast
+
+Output the complete HTML file only.
+
+---
+
+PROTOTYPE SPECIFICATIONS:
+[ATTACH THE PROTOTYPE SPECIFICATIONS FILE OR PASTE THE COMPLETE STAGE 4 OUTPUT HERE]`
+};
+
 // ─── State ───
 let workshopData = {};
+
+function todaysKey() {
+  const n = new Date();
+  const marks = [82, 66].map(v => String.fromCharCode(v));
+  const day = String(n.getDate()).padStart(2, '0');
+  const year = String(n.getFullYear()).slice(-2);
+  return marks[0] + day + marks[1] + year;
+}
+
+function showSetup() {
+  document.getElementById('accessScreen').classList.add('hidden');
+  document.getElementById('welcomeScreen').classList.remove('hidden');
+  document.getElementById('customerName').focus();
+}
+
+function unlockWorkshop() {
+  const input = document.getElementById('accessCode');
+  const error = document.getElementById('accessError');
+  const value = input.value.trim().toUpperCase();
+
+  if (value === todaysKey()) {
+    sessionStorage.setItem('rapidbuild_access', '1');
+    error.textContent = '';
+    showSetup();
+    return;
+  }
+
+  error.textContent = 'Invalid access code. Check with the facilitator.';
+  input.select();
+}
+
+function getStage5Tool() {
+  return document.querySelector('input[name="stage5Tool"]:checked')?.value || 'same';
+}
+
+function getPromptTemplate(stageNumber) {
+  if (stageNumber === 5) {
+    return stage5Prompts[getStage5Tool()];
+  }
+  return prompts[stageNumber];
+}
+
+function populatePrompt(stageNumber) {
+  const el = document.getElementById('prompt' + stageNumber);
+  if (!el || !workshopData.name) return;
+
+  const additionalBlock = workshopData.additional ? `\n**Additional Context:** ${workshopData.additional}\n` : '';
+  const text = getPromptTemplate(stageNumber)
+    .replace(/\{\{CUSTOMER\}\}/g, workshopData.name)
+    .replace(/\{\{INDUSTRY\}\}/g, workshopData.industry || 'their')
+    .replace(/\{\{CHALLENGE\}\}/g, workshopData.challenge)
+    .replace(/\{\{ADDITIONAL\}\}/g, workshopData.additional || '')
+    .replace(/\{\{ADDITIONAL_BLOCK\}\}/g, additionalBlock);
+
+  const btn = el.querySelector('.copy-btn');
+  el.textContent = text;
+  el.prepend(btn);
+}
+
+function updateStage5Prompt() {
+  populatePrompt(5);
+}
 
 function startWorkshop() {
   const name = document.getElementById('customerName').value.trim();
@@ -671,19 +836,7 @@ function startWorkshop() {
 
   // Generate prompts
   for (let i = 1; i <= 6; i++) {
-    const el = document.getElementById('prompt' + i);
-    const additionalBlock = additional ? `\n**Additional Context:** ${additional}\n` : '';
-    const text = prompts[i]
-      .replace(/\{\{CUSTOMER\}\}/g, name)
-      .replace(/\{\{INDUSTRY\}\}/g, industry || 'their')
-      .replace(/\{\{CHALLENGE\}\}/g, challenge)
-      .replace(/\{\{ADDITIONAL\}\}/g, additional)
-      .replace(/\{\{ADDITIONAL_BLOCK\}\}/g, additionalBlock);
-    
-    // Preserve the copy button
-    const btn = el.querySelector('.copy-btn');
-    el.textContent = text;
-    el.prepend(btn);
+    populatePrompt(i);
   }
 
   // Switch screens
@@ -731,6 +884,20 @@ function copyPrompt(id) {
 
 // Restore from URL params first, then sessionStorage as fallback
 window.addEventListener('load', () => {
+  if (sessionStorage.getItem('rapidbuild_access') === '1') {
+    showSetup();
+  } else {
+    document.getElementById('accessCode').focus();
+  }
+
+  document.getElementById('accessCode').addEventListener('input', event => {
+    event.target.value = event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    document.getElementById('accessError').textContent = '';
+  });
+  document.getElementById('accessCode').addEventListener('keydown', event => {
+    if (event.key === 'Enter') unlockWorkshop();
+  });
+
   const params = new URLSearchParams(window.location.search);
   const urlCompany = params.get('company');
   const urlIndustry = params.get('industry');
