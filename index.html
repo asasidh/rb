@@ -1,76 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RapidBuild Workshop — Prompt Handbook</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --tcs-primary: #1A1A2E;
-  --tcs-accent: #E94560;
-  --tcs-blue: #0F3460;
-  --tcs-light: #16213E;
-  --gold: #FFB81C;
-  --bg: #F5F7FA;
-  --card: #FFFFFF;
-  --text: #1A2B3C;
-  --text-secondary: #4A5568;
-  --text-muted: #8492A6;
-  --border: #E2E8F0;
-  --radius: 12px;
-  --success: #2E7D32;
+/* ─── THEME TOKENS ─── */
+:root, [data-theme="light"] {
+  --accent:#E94560;
+  --accent-dark:#D63652;
+  --gold:#FFB81C;
+
+  --bg:#F5F7FA;
+  --card:#FFFFFF;
+  --card-2:#FAFBFC;
+  --text:#1A2B3C;
+  --text-secondary:#4A5568;
+  --text-muted:#8492A6;
+  --heading:#1A1A2E;
+  --border:#E2E8F0;
+
+  --chip-bg:#1A1A2E;
+  --chip-text:#FFFFFF;
+
+  --note-bg:#FFF8E1;
+  --note-text:#5D4E00;
+
+  --context-bg1:#FFF8E1;
+  --context-bg2:#FFF3CD;
+  --context-head:#8B6914;
+  --context-text:#5D4E00;
+
+  --alert-bg:#E8F1FF;
+  --alert-text:#173B67;
+  --alert-border:#1A1A2E;
+
+  --grad1:#1A1A2E;
+  --grad2:#0F3460;
+  --grad3:#16213E;
+
+  --prompt-bg:#0D1117;
+  --prompt-text:#C9D1D9;
+
+  --shadow:rgba(0,0,0,0.06);
+  --shadow-strong:rgba(0,0,0,0.3);
+  --accent-soft:rgba(233,69,96,0.1);
+  --radius:12px;
+  --success:#2E7D32;
 }
+[data-theme="dark"] {
+  --accent:#FF5C78;
+  --accent-dark:#E94560;
+  --gold:#FFC94D;
+
+  --bg:#0E1016;
+  --card:#171A22;
+  --card-2:#1E222C;
+  --text:#E6EDF3;
+  --text-secondary:#AAB4C2;
+  --text-muted:#7A8696;
+  --heading:#F0F3F8;
+  --border:#2A2F3A;
+
+  --chip-bg:#FF5C78;
+  --chip-text:#1A1A2E;
+
+  --note-bg:#2A2614;
+  --note-text:#F2DFA0;
+
+  --context-bg1:#2A2614;
+  --context-bg2:#241F10;
+  --context-head:#E8C45A;
+  --context-text:#EAD79A;
+
+  --alert-bg:#16243A;
+  --alert-text:#BBD2F0;
+  --alert-border:#FF5C78;
+
+  --grad1:#12131C;
+  --grad2:#1B2A4A;
+  --grad3:#10182C;
+
+  --prompt-bg:#06080C;
+  --prompt-text:#C9D1D9;
+
+  --shadow:rgba(0,0,0,0.45);
+  --shadow-strong:rgba(0,0,0,0.55);
+  --accent-soft:rgba(255,92,120,0.16);
+}
+
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; transition:background 0.2s, color 0.2s; }
+
+/* ─── THEME TOGGLE ─── */
+.theme-toggle {
+  position:fixed; bottom:20px; right:20px; z-index:1000;
+  width:46px; height:46px; border-radius:50%;
+  background:var(--card); color:var(--text); border:1px solid var(--border);
+  font-size:20px; cursor:pointer; box-shadow:0 6px 18px var(--shadow);
+  display:flex; align-items:center; justify-content:center;
+  transition:transform 0.2s, background 0.2s;
+}
+.theme-toggle:hover { transform:translateY(-2px); }
 
 /* ─── ACCESS / WELCOME SCREENS ─── */
 .access-screen, .welcome-screen {
   min-height:100vh; display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(135deg, var(--tcs-primary) 0%, var(--tcs-blue) 50%, var(--tcs-light) 100%);
+  background:linear-gradient(135deg, var(--grad1) 0%, var(--grad2) 50%, var(--grad3) 100%);
   padding:32px;
 }
 .welcome-card, .access-card {
   background:var(--card); border-radius:16px; padding:48px;
-  max-width:640px; width:100%; box-shadow:0 24px 64px rgba(0,0,0,0.3);
+  max-width:640px; width:100%; box-shadow:0 24px 64px var(--shadow-strong);
 }
-.access-card { max-width:420px; }
+.access-card { max-width:440px; }
 .welcome-card .logo, .access-card .logo {
   font-size:14px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
-  color:var(--tcs-accent); margin-bottom:8px;
+  color:var(--accent); margin-bottom:8px;
 }
 .welcome-card h1, .access-card h1 {
-  font-size:32px; font-weight:800; margin-bottom:8px; color:var(--tcs-primary);
+  font-size:32px; font-weight:800; margin-bottom:8px; color:var(--heading);
 }
 .welcome-card .subtitle, .access-card .subtitle {
   font-size:16px; color:var(--text-secondary); margin-bottom:32px; line-height:1.6;
 }
 .access-error {
-  min-height:20px; margin-top:10px; font-size:13px; color:var(--tcs-accent);
+  min-height:20px; margin-top:10px; font-size:13px; color:var(--accent);
 }
+.type-line {
+  font-size:13px; color:var(--text-muted); margin-bottom:24px;
+}
+.type-line a { color:var(--accent); cursor:pointer; text-decoration:none; font-weight:600; }
+.type-line a:hover { text-decoration:underline; }
+
 .form-group { margin-bottom:24px; }
 .form-group label {
   display:block; font-size:13px; font-weight:600; margin-bottom:8px;
   color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;
 }
-.form-group input, .form-group textarea {
+.form-group input, .form-group textarea, .form-group select {
   width:100%; padding:14px 16px; border:2px solid var(--border); border-radius:10px;
   font-family:'Inter',sans-serif; font-size:15px; color:var(--text);
-  transition:border-color 0.2s, box-shadow 0.2s; background:#FAFBFC;
+  transition:border-color 0.2s, box-shadow 0.2s; background:var(--card-2);
 }
-.form-group input:focus, .form-group textarea:focus {
-  outline:none; border-color:var(--tcs-accent);
-  box-shadow:0 0 0 3px rgba(233,69,96,0.1); background:white;
+.form-group select { cursor:pointer; appearance:none; -webkit-appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--text-muted) 50%),linear-gradient(135deg,var(--text-muted) 50%,transparent 50%);
+  background-position:calc(100% - 20px) calc(1.2em),calc(100% - 15px) calc(1.2em);
+  background-size:5px 5px,5px 5px; background-repeat:no-repeat; }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  outline:none; border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-soft); background:var(--card);
 }
 .form-group textarea { resize:vertical; min-height:120px; line-height:1.6; }
 .form-group .hint { font-size:12px; color:var(--text-muted); margin-top:6px; }
 
 .btn-start {
-  width:100%; padding:16px; background:var(--tcs-accent); color:white;
+  width:100%; padding:16px; background:var(--accent); color:#fff;
   border:none; border-radius:10px; font-size:16px; font-weight:700;
   cursor:pointer; transition:all 0.2s; letter-spacing:0.5px;
 }
-.btn-start:hover { background:#D63652; transform:translateY(-1px); box-shadow:0 8px 24px rgba(233,69,96,0.3); }
+.btn-start:hover { background:var(--accent-dark); transform:translateY(-1px); box-shadow:0 8px 24px var(--accent-soft); }
 .btn-start:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
 
 /* ─── WORKSHOP SCREEN ─── */
@@ -79,24 +169,23 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
 .access-screen.hidden, .welcome-screen.hidden { display:none; }
 
 .header {
-  background:linear-gradient(135deg, var(--tcs-primary) 0%, var(--tcs-blue) 100%);
-  color:white; padding:40px 32px; text-align:center;
+  background:linear-gradient(135deg, var(--grad1) 0%, var(--grad2) 100%);
+  color:#fff; padding:40px 32px; text-align:center; position:relative;
 }
 .header .back-btn {
   position:absolute; left:24px; top:24px; background:rgba(255,255,255,0.1);
-  border:1px solid rgba(255,255,255,0.2); color:white; padding:8px 16px;
+  border:1px solid rgba(255,255,255,0.2); color:#fff; padding:8px 16px;
   border-radius:8px; font-size:13px; cursor:pointer; font-family:'Inter',sans-serif;
   transition:background 0.2s;
 }
 .header .back-btn:hover { background:rgba(255,255,255,0.2); }
 .header .export-btn {
   position:absolute; right:24px; top:24px; z-index:10;
-  background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3);
+  background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3);
   padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600;
   cursor:pointer; transition:all 0.2s; font-family:inherit;
 }
 .header .export-btn:hover { background:rgba(255,255,255,0.25); }
-.header { position:relative; }
 .header h1 { font-size:32px; font-weight:800; margin-bottom:6px; }
 .header .customer-name { font-size:20px; opacity:0.9; margin-bottom:4px; }
 .header .meta {
@@ -106,29 +195,38 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
 
 .container { max-width:900px; margin:0 auto; padding:32px; }
 
-/* Challenge context card */
 .context-card {
-  background:linear-gradient(135deg, #FFF8E1 0%, #FFF3CD 100%);
+  background:linear-gradient(135deg, var(--context-bg1) 0%, var(--context-bg2) 100%);
   border-left:4px solid var(--gold); border-radius:0 var(--radius) var(--radius) 0;
   padding:20px 24px; margin-bottom:28px;
 }
-.context-card h3 { font-size:14px; font-weight:700; color:#8B6914; margin-bottom:8px; }
-.context-card p { font-size:14px; color:#5D4E00; white-space:pre-wrap; }
+.context-card h3 { font-size:14px; font-weight:700; color:var(--context-head); margin-bottom:8px; }
+.context-card p { font-size:14px; color:var(--context-text); white-space:pre-wrap; }
 
 .how-to {
   background:var(--card); border-radius:var(--radius); padding:24px 28px;
-  margin-bottom:28px; box-shadow:0 2px 8px rgba(0,0,0,0.06);
-  border-left:4px solid var(--tcs-accent);
+  margin-bottom:28px; box-shadow:0 2px 8px var(--shadow);
+  border-left:4px solid var(--accent);
 }
-.how-to h2 { font-size:16px; margin-bottom:12px; color:var(--tcs-primary); }
+.how-to h2 { font-size:16px; margin-bottom:12px; color:var(--heading); }
 .how-to ol { padding-left:20px; font-size:14px; color:var(--text-secondary); }
 .how-to li { margin-bottom:6px; }
+.how-to .tip { margin-top:12px; font-size:13px; color:var(--text-secondary); background:var(--alert-bg); border-radius:8px; padding:12px 14px; }
+.how-to .tip a, .context-card a { color:var(--accent); }
+
+.diamond-bar { display:flex; gap:8px; margin-bottom:28px; }
+.diamond-phase {
+  flex:1; background:var(--card); border-radius:var(--radius); padding:14px 16px;
+  box-shadow:0 2px 8px var(--shadow); border-top:4px solid var(--accent);
+}
+.diamond-phase .ph-label { font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--accent); }
+.diamond-phase .ph-desc { font-size:12px; color:var(--text-muted); margin-top:4px; }
 
 .toc {
   background:var(--card); border-radius:var(--radius); padding:28px 32px;
-  margin-bottom:32px; box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  margin-bottom:32px; box-shadow:0 2px 8px var(--shadow);
 }
-.toc h2 { font-size:18px; margin-bottom:16px; color:var(--tcs-primary); }
+.toc h2 { font-size:18px; margin-bottom:16px; color:var(--heading); }
 .toc-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .toc a {
   display:flex; align-items:center; gap:10px;
@@ -138,29 +236,34 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
 .toc a:hover { background:var(--bg); }
 .toc .num {
   width:28px; height:28px; border-radius:50%;
-  background:var(--tcs-primary); color:white;
+  background:var(--chip-bg); color:var(--chip-text);
   display:flex; align-items:center; justify-content:center;
   font-size:12px; font-weight:700; flex-shrink:0;
 }
 
 .stage {
   background:var(--card); border-radius:var(--radius);
-  margin-bottom:24px; box-shadow:0 2px 8px rgba(0,0,0,0.06); overflow:hidden;
+  margin-bottom:24px; box-shadow:0 2px 8px var(--shadow); overflow:hidden;
 }
 .stage-header {
   padding:24px 32px; cursor:pointer;
   display:flex; align-items:center; gap:16px;
   border-bottom:1px solid var(--border);
 }
-.stage-header:hover { background:#FAFBFC; }
+.stage-header:hover { background:var(--card-2); }
 .stage-num {
   width:48px; height:48px; border-radius:12px;
-  background:var(--tcs-primary); color:white;
+  background:var(--chip-bg); color:var(--chip-text);
   display:flex; align-items:center; justify-content:center;
   font-size:20px; font-weight:800; flex-shrink:0;
 }
 .stage-title { font-size:20px; font-weight:700; }
 .stage-time { font-size:13px; color:var(--text-muted); margin-top:2px; }
+.stage-phase-tag {
+  display:inline-block; font-size:10px; font-weight:700; letter-spacing:0.5px;
+  text-transform:uppercase; color:var(--accent); background:var(--accent-soft);
+  padding:2px 8px; border-radius:4px; margin-left:8px; vertical-align:middle;
+}
 .stage-toggle { margin-left:auto; font-size:20px; color:var(--text-muted); transition:transform 0.3s; }
 .stage.open .stage-toggle { transform:rotate(180deg); }
 
@@ -168,28 +271,24 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
 .stage.open .stage-body { display:block; }
 
 .note {
-  background:#FFF8E1; border-left:4px solid var(--gold);
+  background:var(--note-bg); border-left:4px solid var(--gold);
   padding:14px 18px; border-radius:0 8px 8px 0;
-  margin-bottom:20px; font-size:14px; color:#5D4E00;
+  margin-bottom:20px; font-size:14px; color:var(--note-text);
 }
-
 .stage-alert {
-  background:#E8F1FF; border-left:4px solid var(--tcs-primary);
+  background:var(--alert-bg); border-left:4px solid var(--alert-border);
   padding:14px 18px; border-radius:0 8px 8px 0;
-  margin-bottom:20px; font-size:14px; color:#173B67;
+  margin-bottom:20px; font-size:14px; color:var(--alert-text);
 }
-
 .tool-choice {
   border:1px solid var(--border); border-radius:8px;
-  padding:16px 18px; margin:16px 0 20px; background:#FAFBFC;
+  padding:16px 18px; margin:16px 0 20px; background:var(--card-2);
 }
 .tool-choice legend {
-  font-size:14px; font-weight:700; color:var(--tcs-primary);
-  padding:0 4px;
+  font-size:14px; font-weight:700; color:var(--heading); padding:0 4px;
 }
 .tool-option {
-  display:flex; gap:10px; align-items:flex-start;
-  padding:12px 0; cursor:pointer;
+  display:flex; gap:10px; align-items:flex-start; padding:12px 0; cursor:pointer;
 }
 .tool-option + .tool-option { border-top:1px solid var(--border); }
 .tool-option input { margin-top:3px; }
@@ -197,42 +296,41 @@ body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); 
 .tool-option span { display:block; font-size:13px; color:var(--text-secondary); line-height:1.5; }
 
 .prompt-block {
-  background:#0D1117; color:#C9D1D9; border-radius:8px;
+  background:var(--prompt-bg); color:var(--prompt-text); border-radius:8px;
   padding:24px; margin:16px 0; font-family:'JetBrains Mono',monospace;
   font-size:13px; line-height:1.8; overflow-x:auto;
-  position:relative; white-space:pre-wrap;
+  position:relative; white-space:pre-wrap; border:1px solid var(--border);
 }
 .copy-btn {
   position:absolute; top:12px; right:12px;
   padding:6px 14px; background:rgba(255,255,255,0.1);
-  color:#C9D1D9; border:1px solid rgba(255,255,255,0.2);
+  color:var(--prompt-text); border:1px solid rgba(255,255,255,0.2);
   border-radius:6px; font-size:12px; cursor:pointer; font-family:'Inter',sans-serif;
 }
 .copy-btn:hover { background:rgba(255,255,255,0.2); }
 
-h3.section-head { font-size:16px; font-weight:700; margin:20px 0 10px; color:var(--tcs-primary); }
-h3.section-head::before { content:''; display:inline-block; width:4px; height:18px; background:var(--tcs-primary); border-radius:2px; margin-right:10px; vertical-align:middle; }
+h3.section-head { font-size:16px; font-weight:700; margin:20px 0 10px; color:var(--heading); }
+h3.section-head::before { content:''; display:inline-block; width:4px; height:18px; background:var(--accent); border-radius:2px; margin-right:10px; vertical-align:middle; }
 
 .look-for, .refinement {
   background:var(--bg); border-radius:8px; padding:18px 20px; margin:12px 0;
 }
-.look-for h4, .refinement h4 { font-size:14px; font-weight:700; margin-bottom:8px; }
+.look-for h4, .refinement h4 { font-size:14px; font-weight:700; margin-bottom:8px; color:var(--text); }
 .look-for li, .refinement li { font-size:14px; margin-bottom:6px; color:var(--text-secondary); }
-.look-for { border-left:4px solid var(--tcs-primary); }
+.look-for { border-left:4px solid var(--accent); }
 .refinement { border-left:4px solid var(--gold); }
+.look-for ul, .refinement ul { padding-left:20px; }
 
 .placeholder-tag {
-  background:#FFEEF0; color:#D32F2F; padding:2px 8px; border-radius:4px;
-  font-weight:600; font-size:12px; border:1px solid #FFCDD2;
+  background:var(--accent-soft); color:var(--accent); padding:2px 8px; border-radius:4px;
+  font-weight:600; font-size:12px; border:1px solid var(--accent);
 }
 
-.footer {
-  text-align:center; padding:32px; font-size:13px; color:var(--text-muted);
-}
+.footer { text-align:center; padding:32px; font-size:13px; color:var(--text-muted); }
 
 @media print {
-  body { background:white !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .access-screen, .welcome-screen, .copy-btn, .back-btn, .export-btn, .toc-grid { display:none !important; }
+  body { background:#fff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .access-screen, .welcome-screen, .copy-btn, .back-btn, .export-btn, .theme-toggle, .toc-grid { display:none !important; }
   .workshop-screen { display:block !important; }
   .header { position:relative !important; break-after:page; padding:60px 32px !important; }
   .header h1 { font-size:36px !important; }
@@ -243,12 +341,11 @@ h3.section-head::before { content:''; display:inline-block; width:4px; height:18
   .stage { break-inside:avoid; page-break-inside:avoid; margin-bottom:24px !important; }
   .stage-body { display:block !important; max-height:none !important; }
   .stage-header { cursor:default; }
-  .prompt-block { 
+  .prompt-block {
     break-inside:avoid; page-break-inside:avoid;
     white-space:pre-wrap !important; font-size:11px !important;
     padding:16px !important; margin:8px 0 !important;
-    border:1px solid #ccc !important; background:#f9f9f9 !important;
-    color:#1a1a1a !important;
+    border:1px solid #ccc !important; background:#f9f9f9 !important; color:#1a1a1a !important;
   }
   .stage-title { font-size:16px !important; }
   .footer { break-before:auto; font-size:10px; }
@@ -256,6 +353,7 @@ h3.section-head::before { content:''; display:inline-block; width:4px; height:18
 @media(max-width:768px) {
   .container { padding:16px; }
   .toc-grid { grid-template-columns:1fr; }
+  .diamond-bar { flex-direction:column; }
   .header h1 { font-size:24px; }
   .welcome-card, .access-card { padding:32px 24px; }
 }
@@ -263,10 +361,20 @@ h3.section-head::before { content:''; display:inline-block; width:4px; height:18
 </head>
 <body>
 
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light / dark">🌙</button>
+
 <!-- ═══════════ ACCESS SCREEN ═══════════ -->
 <div class="access-screen" id="accessScreen">
   <div class="access-card">
-    <p class="subtitle">Enter today&apos;s 6-character workshop access code to continue.</p>
+    <div class="logo">TCS AI Practice</div>
+    <h1>🏗️ RapidBuild Workshop</h1>
+    <p class="subtitle">Select your workshop type and enter today&apos;s 6-character access code to continue.</p>
+
+    <div class="form-group">
+      <label>Workshop Type</label>
+      <select id="workshopType"></select>
+      <div class="hint" id="workshopTypeHint"></div>
+    </div>
 
     <div class="form-group">
       <label>Access Code</label>
@@ -283,8 +391,9 @@ h3.section-head::before { content:''; display:inline-block; width:4px; height:18
 <div class="welcome-screen hidden" id="welcomeScreen">
   <div class="welcome-card">
     <div class="logo">TCS AI Practice</div>
-    <h1>🏗️ RapidBuild Workshop</h1>
-    <p class="subtitle">AI-powered ideation-to-prototype in 60 minutes. Enter your customer details below to generate a tailored prompt handbook.</p>
+    <h1 id="welcomeTitle">🏗️ RapidBuild Workshop</h1>
+    <p class="subtitle" id="welcomeSubtitle"></p>
+    <p class="type-line">Workshop type: <strong id="welcomeTypeLabel"></strong> · <a onclick="goToAccess()">change</a></p>
 
     <div class="form-group">
       <label>Customer / Company Name</label>
@@ -299,7 +408,7 @@ h3.section-head::before { content:''; display:inline-block; width:4px; height:18
     <div class="form-group">
       <label>Business Challenge</label>
       <textarea id="challengeText" placeholder="Describe the business challenge in detail. What problem are they trying to solve? Who is affected? What's the impact?"></textarea>
-      <div class="hint">Be specific — the more context you provide, the better the AI prompts will be tailored.</div>
+      <div class="hint" id="challengeHint">Be specific — the more context you provide, the better the AI prompts will be tailored.</div>
     </div>
 
     <div class="form-group">
@@ -313,240 +422,50 @@ h3.section-head::before { content:''; display:inline-block; width:4px; height:18
 
 <!-- ═══════════ WORKSHOP SCREEN ═══════════ -->
 <div class="workshop-screen" id="workshopScreen">
-
   <div class="header">
     <button class="back-btn" onclick="goBack()">← Back to Setup</button>
     <button class="export-btn" onclick="exportPDF()" title="Export as PDF">📄 Export PDF</button>
-    <h1>🏗️ RapidBuild Workshop</h1>
+    <h1 id="workshopTitle">🏗️ RapidBuild Workshop</h1>
     <div class="customer-name" id="headerCustomer"></div>
     <div class="meta">
       <span id="headerIndustry"></span>
-      <span>⏱ 1 hour</span>
-      <span>📋 6 Stages</span>
+      <span id="headerDuration">⏱ 1 hour</span>
+      <span id="headerStages">📋 6 Stages</span>
     </div>
   </div>
 
   <div class="container">
-
     <div class="context-card">
       <h3>📌 Business Challenge</h3>
       <p id="contextChallenge"></p>
     </div>
 
-    <div class="how-to">
-      <h2>📖 How to Use This Handbook</h2>
-      <ol>
-        <li><strong>Copy</strong> the prompt from each stage</li>
-        <li><strong>Paste</strong> into the <strong>same conversation thread</strong> in your LLM (Claude, GPT-4, Gemini, etc.)</li>
-        <li><strong>Review</strong> the output as a team</li>
-        <li><strong>Refine</strong> — edit, add context, challenge assumptions</li>
-        <li><strong>Move to next stage</strong> — the AI already has context from previous stages. No need to paste previous output (unless a placeholder asks for a team decision).</li>
-      </ol>
-    </div>
+    <div class="how-to" id="howTo"></div>
+    <div class="diamond-bar" id="diamondBar" style="display:none"></div>
 
     <div class="toc">
       <h2>📑 Table of Contents</h2>
-      <div class="toc-grid">
-        <a href="#stage1" onclick="openStage(0)"><span class="num">1</span> Research & Discovery</a>
-        <a href="#stage2" onclick="openStage(1)"><span class="num">2</span> Root-Cause Analysis</a>
-        <a href="#stage3" onclick="openStage(2)"><span class="num">3</span> AI Idea Generation</a>
-        <a href="#stage4" onclick="openStage(3)"><span class="num">4</span> One-Page Pilot Brief</a>
-        <a href="#stage5" onclick="openStage(4)"><span class="num">5</span> Build the Application</a>
-        <a href="#stage6" onclick="openStage(5)"><span class="num">6</span> Deploy & Review</a>
-      </div>
+      <div class="toc-grid" id="tocGrid"></div>
     </div>
 
-    <!-- STAGE 1 -->
-    <div class="stage open" id="stage1">
-      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="stage-num">1</div>
-        <div><div class="stage-title">Research & Discovery</div><div class="stage-time">⏱ 10 minutes</div></div>
-        <div class="stage-toggle">▼</div>
-      </div>
-      <div class="stage-body">
-        <div class="note">💡 <strong>Facilitator:</strong> This stage maps the landscape. Give participants a few minutes to read the output, then discuss. Challenge the AI's assumptions with real-world experience.</div>
-        <h3 class="section-head">Prompt</h3>
-        <div class="prompt-block" id="prompt1"><button class="copy-btn" onclick="copyPrompt('prompt1')">📋 Copy</button></div>
-        <div class="look-for">
-          <h4>🎯 What to Look For</h4>
-          <ul>
-            <li>Are the personas realistic for this business?</li>
-            <li>Do the pain points match what the team actually experiences?</li>
-            <li>Are the success metrics measurable and achievable?</li>
-            <li>Anything the AI missed that the team knows from experience?</li>
-          </ul>
-        </div>
-        <div class="refinement">
-          <h4>✏️ Team Discussion Questions</h4>
-          <ul>
-            <li>"Which persona feels the most pain today?"</li>
-            <li>"What workarounds are we already using that the AI didn't mention?"</li>
-            <li>"Are these the right KPIs, or are we measuring the wrong things?"</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- STAGE 2 -->
-    <div class="stage" id="stage2">
-      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="stage-num">2</div>
-        <div><div class="stage-title">Root-Cause Analysis (Five Whys)</div><div class="stage-time">⏱ 10 minutes</div></div>
-        <div class="stage-toggle">▼</div>
-      </div>
-      <div class="stage-body">
-        <div class="note">💡 <strong>Facilitator:</strong> The Five Whys technique often reveals systemic root causes. Encourage the team to push back — "Is that really why?"</div>
-        <h3 class="section-head">Prompt</h3>
-        <div class="prompt-block" id="prompt2"><button class="copy-btn" onclick="copyPrompt('prompt2')">📋 Copy</button></div>
-        <div class="look-for">
-          <h4>🎯 What to Look For</h4>
-          <ul>
-            <li>Do the root causes ring true, or is the AI being too generic?</li>
-            <li>Are there root causes the team already knows about?</li>
-            <li>Is the test plan realistic — do we actually have access to that data?</li>
-          </ul>
-        </div>
-        <div class="refinement">
-          <h4>✏️ Team Discussion Questions</h4>
-          <ul>
-            <li>"Which root cause, if solved, would have the biggest cascading effect?"</li>
-            <li>"Do we already have the data to test these hypotheses?"</li>
-            <li>"What organisational barriers exist to accessing this data?"</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- STAGE 3 -->
-    <div class="stage" id="stage3">
-      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="stage-num">3</div>
-        <div><div class="stage-title">AI Idea Generation & Clustering</div><div class="stage-time">⏱ 10 minutes</div></div>
-        <div class="stage-toggle">▼</div>
-      </div>
-      <div class="stage-body">
-        <div class="note">💡 <strong>Facilitator:</strong> This is the creative stage. After the AI generates ideas, use dot-voting: each person gets 3 dots to vote on favourites across all clusters.</div>
-        <h3 class="section-head">Prompt</h3>
-        <div class="prompt-block" id="prompt3"><button class="copy-btn" onclick="copyPrompt('prompt3')">📋 Copy</button></div>
-        <div class="look-for">
-          <h4>🎯 What to Look For</h4>
-          <ul>
-            <li>Are ideas specific enough to be actionable?</li>
-            <li>Does the scoring feel right?</li>
-            <li>Which idea gets the team most excited?</li>
-          </ul>
-        </div>
-        <div class="refinement">
-          <h4>✏️ Team Activity: Dot-Voting</h4>
-          <ul>
-            <li>Give each participant 3 sticky dots (or digital votes)</li>
-            <li>Vote on favourite ideas across all clusters</li>
-            <li>Tally results and discuss the winner</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- STAGE 4 -->
-    <div class="stage" id="stage4">
-      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="stage-num">4</div>
-        <div><div class="stage-title">One-Page Pilot Brief</div><div class="stage-time">⏱ 10 minutes</div></div>
-        <div class="stage-toggle">▼</div>
-      </div>
-      <div class="stage-body">
-        <div class="note">💡 <strong>Facilitator:</strong> The output should be detailed enough that a developer could build from it. Review each section critically.</div>
-        <h3 class="section-head">Prompt</h3>
-        <div class="prompt-block" id="prompt4"><button class="copy-btn" onclick="copyPrompt('prompt4')">📋 Copy</button></div>
-        <div class="look-for">
-          <h4>🎯 What to Look For</h4>
-          <ul>
-            <li>Is the user flow realistic for how this company actually works?</li>
-            <li>Does the sample data feel authentic?</li>
-            <li>Are the guardrails sufficient?</li>
-            <li>Would the success metrics prove value to leadership?</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- STAGE 5 -->
-    <div class="stage" id="stage5">
-      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="stage-num">5</div>
-        <div><div class="stage-title">Build the Application</div><div class="stage-time">⏱ 15 minutes</div></div>
-        <div class="stage-toggle">▼</div>
-      </div>
-      <div class="stage-body">
-        <div class="note">💡 <strong>Facilitator:</strong> This generates a full prototype. Copy the code, save as <code>index.html</code>, open in browser. Review as a team.</div>
-        <div class="stage-alert">⚠️ <strong>Facilitator check:</strong> Confirm which tool participants should use before they copy the Stage 5 prompt.</div>
-        <fieldset class="tool-choice">
-          <legend>Choose your Stage 5 build path</legend>
-          <label class="tool-option">
-            <input type="radio" name="stage5Tool" value="same" checked onchange="updateStage5Prompt()">
-            <span><strong>Option 1: Continue in the same tool</strong>Choose this if you are continuing this stage using the same tool used in steps 1-4.</span>
-          </label>
-          <label class="tool-option">
-            <input type="radio" name="stage5Tool" value="coding" onchange="updateStage5Prompt()">
-            <span><strong>Option 2: Switch to a coding-specific tool</strong>Choose this if you are switching to a different coding-specific tool at this stage, such as Codex.</span>
-          </label>
-        </fieldset>
-        <h3 class="section-head">Prompt</h3>
-        <div class="prompt-block" id="prompt5"><button class="copy-btn" onclick="copyPrompt('prompt5')">📋 Copy</button></div>
-        <div class="look-for">
-          <h4>🎯 What to Look For</h4>
-          <ul>
-            <li>Does it look like something this company would actually ship?</li>
-            <li>Is the language appropriate for end users?</li>
-            <li>Does the data visualisation tell the right story?</li>
-          </ul>
-        </div>
-        <div class="refinement">
-          <h4>✏️ Team Activity</h4>
-          <ul>
-            <li>Open prototype in browser and walk through the flow together</li>
-            <li>Each person writes: 1 thing that works, 1 thing to change, 1 thing missing</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- STAGE 6 -->
-    <div class="stage" id="stage6">
-      <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="stage-num">6</div>
-        <div><div class="stage-title">Deploy & Review</div><div class="stage-time">⏱ 5 minutes</div></div>
-        <div class="stage-toggle">▼</div>
-      </div>
-      <div class="stage-body">
-        <div class="note">💡 <strong>Facilitator:</strong> Wrap-up stage. Create the deployment note and demo script for stakeholder presentation.</div>
-        <h3 class="section-head">Prompt</h3>
-        <div class="prompt-block" id="prompt6"><button class="copy-btn" onclick="copyPrompt('prompt6')">📋 Copy</button></div>
-        <div class="look-for">
-          <h4>🎯 Final Team Discussion</h4>
-          <ul>
-            <li>"Would this solve the problem we started with?"</li>
-            <li>"Who needs to see this first?"</li>
-            <li>"What's the one thing that would make or break adoption?"</li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <div id="stagesContainer"></div>
 
     <div class="footer">
-      <p>Generated by <strong>RapidBuild Pipeline</strong> 🏗️</p>
+      <p>Generated by <strong id="footerName">RapidBuild Pipeline</strong></p>
       <p>TCS AI Practice</p>
     </div>
-
   </div>
 </div>
 
 <script>
-// ─── Prompt Templates ───
-// {{CUSTOMER}}, {{INDUSTRY}}, {{CHALLENGE}}, {{ADDITIONAL}} are replaced dynamically
+// ════════════════════════════════════════════════════════════
+//  WORKSHOP DEFINITIONS
+//  To add a new workshop type later: add an entry to WORKSHOPS
+//  and its id to WORKSHOP_ORDER. Everything else is data-driven.
+// ════════════════════════════════════════════════════════════
 
-const prompts = {
-  1: `You are a research aide for a technology innovation workshop.
+// ─── REGULAR (RapidBuild — HTML5 prototype) prompts ───
+const REG_P1 = `You are a research aide for a technology innovation workshop.
 
 **Company:** {{CUSTOMER}} — operating in the {{INDUSTRY}} industry.
 
@@ -569,9 +488,9 @@ Deliver the following in structured format:
 
 6. **1 Key Risk** — The single biggest risk to solving this challenge (regulatory, technical, organisational, or data-related). Explain why and how it could derail the solution.
 
-Format with clear headers and tables where appropriate.`,
+Format with clear headers and tables where appropriate.`;
 
-  2: `You are conducting a root-cause analysis for {{CUSTOMER}}.
+const REG_P2 = `You are conducting a root-cause analysis for {{CUSTOMER}}.
 
 Using the top 3 pain points (by severity and frequency) from the Research & Discovery output above:
 
@@ -592,41 +511,35 @@ Using the top 3 pain points (by severity and frequency) from the Research & Disc
 
 5. **Privacy & Regulatory Constraints** — Identify any privacy laws, industry regulations, or contractual constraints that apply to the data involved. Flag anything that could limit data collection or sharing.
 
-Format with clear headers. Use tables for the test plan.`,
+Format with clear headers. Use tables for the test plan.`;
 
-  3: `You are an AI product strategist generating solution ideas for {{CUSTOMER}}.
+const REG_P3 = `You are an AI innovation facilitator running a divergent ideation session for {{CUSTOMER}}.
 
-**Context:** {{CHALLENGE}} Use the root causes from Stage 2 and the key insights from Stage 1 (already in this conversation) to generate AI-driven solution ideas clustered into three categories:
+**Context:** {{CHALLENGE}} Use the root causes from Stage 2 and the insights and personas from Stage 1 (already in this conversation).
 
-### CLUSTER 1: Machine Learning (ML) / Computer Vision (CV)
-Ideas leveraging classic Machine Learning techniques image recognition, document parsing, OCR, visual monitoring, or anomaly detection.
-- Generate **3–5 concrete ideas** with a one-line description
-- Score each: Impact (1–5), Feasibility (1–5), Speed-to-Pilot (1–5)
-- **Star (★)** the single highest-priority idea
+### GENERATE — diverge widely (do NOT restrict by technology)
+- Produce **10–12 distinct, concrete solution ideas** that address the Stage 2 root causes.
+- Maximise variety: span the full spectrum from **quick wins** (a prototype shippable in weeks) to **ambitious transformations**; cover different personas and different points in the workflow; include at least **2 non-obvious or unconventional ideas**.
+- **Technology is a means, not a category** — draw on whatever genuinely fits each idea (e.g. generative AI / assistants, retrieval & knowledge, ML / prediction, computer vision, automation & orchestration, optimisation, agents, or even a simpler non-AI process fix). Do not force ideas into predefined buckets.
+- Each idea: a short **name** + a one-line description of what it does and the value it delivers. Be specific to {{INDUSTRY}} — no generic "AI dashboard" ideas.
 
-### CLUSTER 2: RAG / Co-Pilot
-Ideas using retrieval-augmented generation, conversational AI, knowledge assistants, or intelligent Q&A.
-- Generate **3–5 concrete ideas**
-- Score and star as above
+### ORGANISE — let themes emerge
+- Group the ideas into **3–5 clusters that emerge naturally from the ideas themselves** (e.g. by the value they create, the persona they serve, or the part of the workflow they target). Name each cluster — do not use fixed, pre-supplied categories.
 
-### CLUSTER 3: Tasking & Automation
-Ideas for workflow automation, intelligent scheduling, auto-notifications, trigger-based actions, or predictive systems.
-- Generate **3–5 concrete ideas**
-- Score and star as above
-
-### SCORING GUIDE
-- **Impact (1–5):** How much does this solve the core challenge?
-- **Feasibility (1–5):** Can {{CUSTOMER}} build/buy this with existing data and tech?
-- **Speed-to-Pilot (1–5):** Can a working prototype be delivered in <4 weeks?
+### SCORE & SHORTLIST — converge
+- Score **every** idea on:
+  - **Impact (1–5):** How much does it solve the core challenge / root causes?
+  - **Feasibility (1–5):** Can {{CUSTOMER}} build or buy it with their likely data and tech?
+  - **Speed-to-Pilot (1–5):** Can a working prototype be delivered in <4 weeks?
+- Present a **scored table per cluster** and **star (★)** the strongest idea in each cluster.
 
 ### OUTPUT
-1. A scored table for each cluster
-2. The ★ top idea per cluster (with brief justification)
-3. **Final Recommendation:** The single best idea overall to take to pilot, with a 3-sentence justification.
+1. The full idea list
+2. The emergent clusters with their scored tables
+3. The ★ top idea per cluster (one-line justification each)
+4. **Final Recommendation:** the single best idea overall to take to prototype, with a 3-sentence justification.`;
 
-Be specific to {{INDUSTRY}} — no generic "AI dashboard" ideas.`,
-
-  4: `You are a product manager writing a one-page pilot brief for {{CUSTOMER}}.
+const REG_P4 = `You are a product manager writing a one-page pilot brief for {{CUSTOMER}}.
 
 **Recommended Idea from Stage 3:**
 [PASTE THE WINNING IDEA AND ITS JUSTIFICATION HERE — this is a team decision from the dot-voting exercise]
@@ -654,9 +567,9 @@ Using the personas from Stage 1 and root causes from Stage 2 (already in this co
 
 10. **Guardrails** — Privacy compliance, uncertainty handling, low-confidence fallbacks, human-in-the-loop checkpoints, bias considerations.
 
-Format clearly. Must be detailed enough for a developer to build a working prototype.`,
+Format clearly. Must be detailed enough for a developer to build a working prototype.`;
 
-  5: `You are a senior full-stack developer building a prototype for {{CUSTOMER}}.
+const REG_P5_SAME = `You are a senior full-stack developer building a prototype for {{CUSTOMER}}.
 
 Using the pilot brief from Stage 4 (already in this conversation), build a **fully functional, single-page web application** with these constraints:
 
@@ -682,30 +595,14 @@ Using the pilot brief from Stage 4 (already in this conversation), build a **ful
 - Clear status indicators with colour coding
 
 ### DESIGN QUALITY
-- Production-grade — will be shown to {{CUSTOMER}} executives
+- Production-grade visual quality
 - No generic AI aesthetics
-- Think: a real product {{CUSTOMER}} would proudly show their stakeholders
+- Think: a real, polished {{CUSTOMER}} product
 - Subtle animations, clear hierarchy, accessible contrast
 
-Output the complete HTML file only.`,
+Output the complete HTML file only.`;
 
-  6: `I have a single-file HTML5 prototype built for {{CUSTOMER}} to address: {{CHALLENGE}}
-
-Provide:
-1. **Deployment Note** (3–5 sentences): What was built, the core value proposition, and how to use it.
-2. **Demo Script** (5 minutes): A talk-track for presenting this to {{CUSTOMER}} leadership in 5 minutes.
-3. **Known Limitations** of the prototype (be honest — what's simulated, what needs real data).
-4. **Next Steps** for moving from prototype to pilot:
-   - What data connections are needed?
-   - What approvals are required?
-   - Estimated timeline for a real pilot
-   - Team/resources needed
-5. **3 Questions to Ask {{CUSTOMER}}** that would validate whether this solution addresses their real needs.`
-};
-
-const stage5Prompts = {
-  same: prompts[5],
-  coding: `You are a senior full-stack developer building a prototype for {{CUSTOMER}}.
+const REG_P5_CODING = `You are a senior full-stack developer building a prototype for {{CUSTOMER}}.
 
 The detailed prototype specifications for what needs to be built will be included as an attachment or at the end of these general guidelines.
 
@@ -738,9 +635,9 @@ Build a **fully functional, single-page web application** with these constraints
 - Clear status indicators with colour coding
 
 ### DESIGN QUALITY
-- Production-grade — will be shown to {{CUSTOMER}} executives
+- Production-grade visual quality
 - No generic AI aesthetics
-- Think: a real product {{CUSTOMER}} would proudly show their stakeholders
+- Think: a real, polished {{CUSTOMER}} product
 - Subtle animations, clear hierarchy, accessible contrast
 
 Output the complete HTML file only.
@@ -748,12 +645,501 @@ Output the complete HTML file only.
 ---
 
 PROTOTYPE SPECIFICATIONS:
-[ATTACH THE PROTOTYPE SPECIFICATIONS FILE OR PASTE THE COMPLETE STAGE 4 OUTPUT HERE]`
+[ATTACH THE PROTOTYPE SPECIFICATIONS FILE OR PASTE THE COMPLETE STAGE 4 OUTPUT HERE]`;
+
+const REG_P6 = `I have a single-file HTML5 prototype built for {{CUSTOMER}} to address: {{CHALLENGE}}
+
+Provide:
+1. **Deployment Note** (3–5 sentences): What was built, the core value proposition, and how to use it.
+2. **Demo Script** (5 steps): A talk-track for presenting this to {{CUSTOMER}} leadership in 5 minutes.
+3. **Known Limitations** of the prototype (be honest — what's simulated, what needs real data).
+4. **Next Steps** for moving from prototype to pilot:
+   - What data connections are needed?
+   - What approvals are required?
+   - Estimated timeline for a real pilot
+   - Team/resources needed
+5. **3 Questions to Ask {{CUSTOMER}}** that would validate whether this solution addresses their real needs.`;
+
+// ─── AGENTBUILD (multi-agent design) prompts ───
+const AG_P1 = `You are a research aide for a multi-agent AI design workshop.
+
+**Company:** {{CUSTOMER}} — operating in the {{INDUSTRY}} industry.
+
+**Business Challenge:** {{CHALLENGE}}
+{{ADDITIONAL_BLOCK}}
+Deliver the following in structured format:
+
+1. **Key Personas** — List 4–6 personas (role, seniority, department) most affected by this challenge. Include BOTH internal staff AND external stakeholders (customers, partners, suppliers).
+
+2. **Top Pains** — Rank the top 5 pain points these personas experience today, with:
+   - Severity (High / Medium / Low)
+   - Frequency (Daily / Weekly / Monthly)
+   - Who feels it most (which persona)
+
+3. **Current Workarounds** — For each pain point, describe the manual or semi-manual workaround currently in use.
+
+4. **Workflow Snapshot** — Map the end-to-end process where these pains concentrate. Show it as a numbered sequence of steps. For each step note: who does it, what system/tool they use, what triggers it, and where work waits or is handed off. (This process is what an agentic solution would later automate, so be concrete.)
+
+5. **Success Metrics** — Define 4–6 measurable KPIs that would indicate the challenge is solved. Include current estimated baselines and target values.
+
+6. **3 Insights** — Non-obvious, data-informed insights specific to this industry and challenge domain.
+
+7. **1 Key Risk** — The single biggest risk to solving this challenge (regulatory, technical, organisational, or data-related). Explain why and how it could derail the solution.
+
+Format with clear headers and tables where appropriate.`;
+
+const AG_P2 = `You are conducting a root-cause analysis for {{CUSTOMER}}.
+
+Using the top 3 pain points (by severity and frequency) and the Workflow Snapshot from the Research & Discovery output above:
+
+1. **Five Whys Drill-Down** — Run a Five Whys analysis for each pain to uncover the root cause. Show each "Why?" step clearly.
+
+2. **3 Root-Cause Hypotheses** per pain (9 total). For each hypothesis, specify:
+   - **Hypothesis statement** — A clear, testable claim
+   - **Disproof evidence** — What data or observation would INVALIDATE this hypothesis?
+   - **Minimum data cut** — The smallest dataset needed to test it
+   - **Data owner(s)** — Who at {{CUSTOMER}} (or their partners) holds this data?
+
+3. **Root-Cause Map** — A structured text diagram linking:
+   Pain Points → Why Chains → Root Causes
+   Show how multiple pains may share common root causes.
+
+4. **Automatability Classification** — For EACH root cause, classify it as one of:
+   - **Agent-addressable** — driven by repetitive multi-step work, information retrieval/synthesis, coordination, or routine judgment that an AI agent system could take on
+   - **Simple automation** — a deterministic rule or integration; no AI/agent needed
+   - **Human / organisational** — requires people, policy, or structural change; agents won't fix it
+   Briefly justify each classification.
+
+5. **Test Plan** — A table with columns:
+   | Hypothesis | Test Method | Data Required | Owner | Timeline | Priority |
+
+6. **Privacy & Regulatory Constraints** — Identify privacy laws, industry regulations, or contractual constraints on the data involved. Flag anything that limits data collection, sharing, or autonomous action by software.
+
+Format with clear headers. Use tables where helpful.`;
+
+const AG_P3 = `You are an agentic-AI solution architect mapping where AI agents can help {{CUSTOMER}}.
+
+**Context:** {{CHALLENGE}} Use the Workflow Snapshot from Stage 1 and the agent-addressable root causes from Stage 2 (already in this conversation).
+
+Produce an **Agent Opportunity Map** as follows:
+
+### 1. TASK INVENTORY
+Decompose the target workflow into 8–15 discrete tasks/decisions. Present as a table:
+| # | Task / Decision | Inputs needed | Output produced | System(s) touched |
+
+### 2. AGENT-SUITABILITY CLASSIFICATION
+For each task, classify and justify in one line:
+- 🤖 **Agent-suitable** — needs reasoning over unstructured input, retrieval/synthesis, drafting, routing, monitoring, or multi-step tool use
+- ⚙️ **Simple automation** — deterministic rule/integration; no LLM needed
+- 🧑 **Human-only** — high-stakes judgment, relationship, legal/ethical sign-off
+Add a column: **Why** (one line).
+
+### 3. CANDIDATE AGENTS
+Group the agent-suitable tasks into 2–5 candidate agents (each agent = a coherent set of related tasks / a clear responsibility). For each candidate agent give:
+- **Name & one-line responsibility**
+- **Tasks it owns** (from the inventory)
+- **Tools/data it would need**
+
+### 4. SCORING
+Score each candidate agent 1–5 on:
+- **Impact** — how much it relieves the core challenge
+- **Feasibility** — is the data, tooling, and access available at {{CUSTOMER}}?
+- **Safety-to-automate** — how safe is it to let this act with limited human oversight? (5 = low risk)
+Present as a scored table and ⭐ the highest-value agent.
+
+### 5. RECOMMENDED AGENTIC WORKFLOW
+Recommend the single workflow + minimal set of agents to take into detailed design. Critically state: **could a single agent with tools achieve this, or is a multi-agent design genuinely justified?** Default to the simplest design that works; only recommend multiple agents when there is real specialization, parallelism, or separation-of-concerns benefit. Give a 3-sentence justification.
+
+Be specific to {{INDUSTRY}} — no generic "AI assistant" ideas.`;
+
+const AG_P4 = `You are a product manager writing a one-page solution brief for an agentic AI pilot at {{CUSTOMER}}.
+
+**Chosen workflow & agent set from Stage 3:**
+[PASTE THE WINNING WORKFLOW AND CANDIDATE AGENTS HERE — this is the team decision from the dot-voting exercise]
+
+Using the personas and Workflow Snapshot from Stage 1 and the root causes from Stage 2 (already in this conversation), produce a structured **one-page Agent Solution Brief** with ALL of the following sections:
+
+1. **Workflow Automated** — The process this agent system owns, its **trigger** (what starts it) and its **end-state** (what "done" looks like).
+
+2. **Target User(s)** — Primary and secondary personas, and how they interact with the agent system.
+
+3. **Problem Statement** — 2–3 sentences rooted in the Stage 2 root causes. Include business impact in dollars or days.
+
+4. **Agent Roster (high level)** — A table:
+   | Agent | One-line Responsibility | Acts autonomously / Suggests-then-human-approves / Human-only |
+
+5. **Orchestration Shape (one line)** — Sequential pipeline, supervisor/hierarchical, parallel fan-out, collaborative network, or single-agent-with-tools — and why.
+
+6. **Human-in-the-Loop Checkpoints** — Where a person reviews, approves, or overrides — and what they see.
+
+7. **Success Metrics & Baselines** — A table:
+   | KPI | Current Baseline | Target | Measurement Method |
+
+8. **Data & Systems Touched** — External systems, APIs, knowledge sources. Mark each **Real** or **Simulated-for-pilot**.
+
+9. **Guardrails (high level)** — Privacy/compliance, low-confidence fallback, escalation to human, and what the agents are NOT allowed to do.
+
+10. **Out of Scope** — What this pilot deliberately will not attempt.
+
+Format clearly. This brief is the agreed scope before detailed architecture design.`;
+
+const AG_P5_SAME = `You are a senior multi-agent systems architect producing a build-ready design for {{CUSTOMER}}.
+
+Using the Agent Solution Brief from Stage 4 (already in this conversation), produce a **detailed, framework-agnostic multi-agent architecture specification**. Design in neutral concepts (agents, tools, orchestration, memory, guardrails) — do NOT assume a specific platform yet. Cover ALL sections:
+
+### 1. ORCHESTRATION PATTERN
+Name the pattern (single-agent-with-tools / sequential pipeline / supervisor (hierarchical) / parallel fan-out + aggregator / collaborative network / evaluator-optimizer / router). Justify the choice and explicitly say **why a simpler pattern would not suffice**.
+
+### 2. AGENT ROSTER
+A table for all agents:
+| Agent | Goal | Trigger / Input | Output | Tools used | Memory it reads/writes | Model tier (reasoning vs fast) | Autonomy (act / act-with-approval / suggest) |
+
+### 3. PER-AGENT SYSTEM PROMPTS
+For EACH agent, write a concise system-prompt sketch: role, key instructions, constraints/boundaries, and output format.
+
+### 4. ORCHESTRATION & CONTROL FLOW
+Describe how control passes between agents: routing/handoff logic, what each agent receives and returns, the **termination conditions**, and **guard limits** (max iterations/turns, cost/time budget, loop-prevention).
+
+### 5. SHARED STATE & MEMORY
+Define the shared state object (key fields), short-term (conversation/run) vs long-term/persistent memory (e.g. knowledge base, vector store, records), and which agents read/write what.
+
+### 6. TOOLS & INTEGRATIONS
+A table:
+| Tool / Integration | Purpose | Inputs → Outputs | Real or Simulated-for-pilot | Owning system / API |
+
+### 7. GUARDRAILS & SAFETY
+Input/output validation, confidence thresholds and low-confidence fallback, human-in-the-loop checkpoints, escalation paths, PII/compliance handling, and what agents are forbidden from doing.
+
+### 8. OBSERVABILITY & EVALUATION
+What to log/trace per run, success metrics per agent and overall, and how the team would evaluate whether the system works (test scenarios / eval method).
+
+### 9. ORCHESTRATION DIAGRAM (Mermaid)
+Output a valid **Mermaid** diagram (flowchart or sequence) inside a \`\`\`mermaid code block, showing: the orchestrator/entry point, each agent, tools, data/memory stores, human checkpoints, and the flow of control/messages between them.
+
+### 10. END-TO-END WALKTHROUGH
+Trace ONE concrete, realistic scenario (with sample input data) step-by-step through the agents and tools — showing inputs, decisions, tool calls, handoffs, any human checkpoint, and the final outcome. Make the data authentic for {{INDUSTRY}}.
+
+Output the complete specification. Be precise enough that an engineer could build this on a platform of their choice.`;
+
+const AG_P7 = `I have a framework-agnostic multi-agent design (from Stage 5) for {{CUSTOMER}} addressing: {{CHALLENGE}}
+
+**Target build platform:**
+[STATE THE PLATFORM — e.g. Microsoft Copilot Studio / Google Vertex AI (Gemini) Agent Builder / LangGraph / CrewAI / AutoGen / OpenAI Agents SDK / other]
+
+Provide:
+
+1. **Platform Mapping** — A table mapping each element of the Stage 5 design to the chosen platform's native constructs:
+   | Design Element (agent / orchestration / tool / memory / guardrail) | Platform Construct | Notes / Gaps / Workarounds |
+   Call out anything the platform does NOT natively support and how to handle it.
+
+2. **Build Sequence (phased)** — A pragmatic order of build: what to stub/simulate first to demo value, what to wire to real systems later. Note dependencies.
+
+3. **Deployment Note** (3–5 sentences): What was designed, the core value proposition, and how a user would experience it.
+
+4. **Demo Script (5 steps)** — A talk-track for presenting this agent system to {{CUSTOMER}} leadership in 5 minutes, walking through the orchestration diagram and the end-to-end scenario.
+
+5. **Known Limitations** — Be honest: what's simulated, what needs real data/integration, where the agents are likely to struggle.
+
+6. **Next Steps to Pilot:**
+   - Data/system connections required
+   - Approvals required — especially **security review and agent-autonomy/permission sign-off**
+   - Estimated timeline for a real pilot
+   - Team/skills needed (incl. agent operations, prompt/eval engineering, integration)
+
+7. **3 Questions to Ask {{CUSTOMER}}** that would validate whether this agentic solution addresses their real needs and is safe to deploy.`;
+
+const AG_P6_PROTOTYPE = `You are a senior full-stack engineer building an INTERACTIVE PROTOTYPE of the multi-agent system designed for {{CUSTOMER}} in the previous stages.
+
+Use the Stage 4 Agent Solution Brief and the Stage 5 architecture specification — agents, orchestration pattern, tools, shared state, guardrails, the Mermaid diagram, and the end-to-end walkthrough — all already in this conversation — as the source of truth.
+
+### CRITICAL PROTOTYPE CONSTRAINTS — READ FIRST
+- This is a DEMO PROTOTYPE only. NO enterprise systems, APIs, databases, or live LLM/agent calls are connected.
+- ALL data is SYNTHETIC — generate realistic but entirely fake records (names, dates, IDs, documents, messages) appropriate for {{INDUSTRY}}.
+- ALL agent reasoning and ALL tool/integration calls are SIMULATED — scripted, mocked responses that illustrate how the real system would behave, not real model or API output.
+- Show a persistent, clearly visible banner: "PROTOTYPE — synthetic data only · no enterprise systems connected · all agents & tool calls simulated."
+
+### TECHNICAL
+- Single self-contained file: HTML5, CSS3, vanilla JavaScript. No backend, no build step, no external calls except Google Fonts. Opens and runs offline in a browser.
+- Responsive, production-grade visual quality.
+- Use {{CUSTOMER}}'s brand palette if known; otherwise professional colours for {{INDUSTRY}}.
+
+### WHAT THE PROTOTYPE MUST DEMONSTRATE
+1. Trigger panel — let the user start the workflow by picking one of 2–3 synthetic scenarios (drawn from the Stage 5 walkthrough) or entering a simple synthetic input.
+2. Orchestration view — render each agent from the Stage 5 roster as a node that activates in the sequence/parallelism of the chosen orchestration pattern, with handoff arrows matching the Mermaid diagram. Highlight the currently-active agent.
+3. Live agent trace — as it runs, stream a readable step-by-step log per agent: input received → short reasoning summary → simulated tool call(s) + mocked result → output → handoff. Stagger the timing so it feels real.
+4. Simulated tools — show each tool call from the spec with clearly-labelled mock inputs and synthetic outputs.
+5. Shared state panel — show the shared state/memory object updating as agents write to it.
+6. Human-in-the-loop checkpoints — at each HITL point in the design, pause and present an Approve / Edit / Reject control the user can act on, and have the flow respond accordingly.
+7. Guardrails in action — demonstrate at least one guardrail/fallback (e.g. a low-confidence result escalating to a human, or a blocked/forbidden action).
+8. Final outcome — present the end result for the chosen scenario, plus a short run summary (which agents ran, key decisions, where a human was involved).
+9. Replay / reset — let the user re-run with a different scenario.
+
+### DESIGN QUALITY
+- Clear visual hierarchy, status colour-coding, subtle animation for the agent flow.
+- The orchestration view + trace should let a non-technical viewer understand "what the agents do and how they hand off" at a glance.
+- No generic AI aesthetics — make it look like a real, polished {{CUSTOMER}} product.
+
+Output the complete single HTML file only.`;
+
+const AG_P6_REALAPP = `You are a senior AI engineer building a WORKING multi-agent application for {{CUSTOMER}} based on the design from the previous stages.
+
+Use the Stage 4 Agent Solution Brief and the Stage 5 architecture specification — agents, orchestration pattern, tools, shared state, guardrails, the Mermaid diagram, and the end-to-end walkthrough — all already in this conversation — as the source of truth.
+
+### CRITICAL DATA & SAFETY CONSTRAINTS — READ FIRST
+- The agents must ACTUALLY RUN — real orchestration, real agent reasoning, real tool-calling logic. This is NOT a scripted simulation.
+- However, NO enterprise systems, production APIs, or real customer data are connected.
+- Replace every external system/integration with a clearly-isolated SYNTHETIC DATA LAYER: realistic but entirely fake records (appropriate for {{INDUSTRY}}) stored locally, plus mock tool/connector functions that read and write only that synthetic data.
+- Put the synthetic data layer behind a clean adapter/interface so it can later be swapped for real connectors WITHOUT changing agent logic. Mark each adapter with \`// TODO: real integration\`.
+- Show a clear notice in the UI and README: the app runs on synthetic data with mocked integrations, nothing is connected to live systems.
+
+### BUILD (implement the Stage 5 design for real)
+- Implement the full orchestration pattern (sequential / supervisor / parallel / network / etc.) with each agent as its own unit — own system prompt, tools, I/O contract, and autonomy level — exactly as specified.
+- Implement real tool-calling against the synthetic data layer / mock connectors.
+- Implement the shared state/memory and the termination + guard limits (max steps, loop and cost guards) from the design.
+- Implement the human-in-the-loop checkpoints as real interactive approve / edit / reject steps that actually gate the flow.
+- Implement the guardrails/fallbacks (input/output validation, low-confidence escalation, forbidden actions) from the design.
+- Provide basic observability: log/trace each agent step, tool call, and decision.
+
+### STACK & DELIVERY
+- Choose the most appropriate, widely-supported stack for a runnable agentic app and state your choice up front. Keep it simple to run locally.
+- If the app calls an LLM, read the model id, provider, and API key from environment variables — never hard-code secrets.
+- Include the synthetic seed dataset and 2–3 ready-to-run sample scenarios.
+- Include a short README: how to install, set the API key (if any), run, and walk through a sample scenario.
+
+Output the complete application: all source files (clearly named), the synthetic seed data, and the README.`;
+
+const STAGE6_TOOLCHOICE_AG = {
+  legend: 'Choose your Stage 6 build path',
+  alert: '⚠️ <strong>Facilitator check:</strong> Decide whether you are producing a demo prototype or a working application before copying the prompt. Both use synthetic data only — no enterprise systems are connected.',
+  options: [
+    { value:'prototype', title:'Option 1: Interactive prototype (simulated)',
+      desc:'A single self-contained HTML5 demo that acts out the agent flow with scripted reasoning and mocked tools. Synthetic data only — nothing is connected.' },
+    { value:'realapp', title:'Option 2: Working application (real agents · synthetic data)',
+      desc:'A runnable app where the agents genuinely orchestrate and call tools, but every data source/integration is mocked with synthetic data behind a swappable adapter.' }
+  ]
 };
+
+const STAGE5_TOOLCHOICE_REG = {
+  legend: 'Choose your Stage 5 build path',
+  options: [
+    { value:'same',   title:'Option 1: Continue in the same tool',
+      desc:'Choose this if you are continuing this stage using the same tool used in steps 1-4.' },
+    { value:'coding', title:'Option 2: Switch to a coding-specific tool',
+      desc:'Choose this if you are switching to a different coding-specific tool at this stage, such as Codex.' }
+  ]
+};
+const WORKSHOPS = {
+  regular: {
+    label: 'Regular',
+    dropdownText: 'Regular — RapidBuild HTML5 prototype',
+    hint: 'The classic RapidBuild flow: ideation → working HTML5 prototype.',
+    emoji: '🏗️',
+    title: '🏗️ RapidBuild Workshop',
+    subtitle: 'AI-powered ideation-to-prototype in 60 minutes. Enter your customer details below to generate a tailored prompt handbook.',
+    challengeHint: 'Be specific — the more context you provide, the better the AI prompts will be tailored.',
+    footerName: 'RapidBuild Pipeline 🏗️',
+    meta: { duration: '⏱ 1 hour', stages: '📋 6 Stages' },
+    diamond: null,
+    howTo: [
+      '<strong>Copy</strong> the prompt from each stage',
+      '<strong>Paste</strong> into the <strong>same conversation thread</strong> in your LLM (Claude, GPT-4, Gemini, etc.)',
+      '<strong>Review</strong> the output as a team',
+      '<strong>Refine</strong> — edit, add context, challenge assumptions',
+      '<strong>Move to next stage</strong> — the AI already has context from previous stages. No need to paste previous output (unless a placeholder asks for a team decision).'
+    ],
+    howToTip: null,
+    stages: [
+      { num:1, title:'Research & Discovery', time:'⏱ 10 minutes',
+        note:'💡 <strong>Facilitator:</strong> This stage maps the landscape. Give participants a few minutes to read the output, then discuss. Challenge the AI&apos;s assumptions with real-world experience.',
+        prompt: REG_P1,
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Are the personas realistic for this business?',
+          'Do the pain points match what the team actually experiences?',
+          'Are the success metrics measurable and achievable?',
+          'Anything the AI missed that the team knows from experience?' ]},
+        refinement:{ title:'✏️ Team Discussion Questions', items:[
+          '"Which persona feels the most pain today?"',
+          '"What workarounds are we already using that the AI didn&apos;t mention?"',
+          '"Are these the right KPIs, or are we measuring the wrong things?"' ]} },
+      { num:2, title:'Root-Cause Analysis (Five Whys)', time:'⏱ 10 minutes',
+        note:'💡 <strong>Facilitator:</strong> The Five Whys technique often reveals systemic root causes. Encourage the team to push back — "Is that really why?"',
+        prompt: REG_P2,
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Do the root causes ring true, or is the AI being too generic?',
+          'Are there root causes the team already knows about?',
+          'Is the test plan realistic — do we actually have access to that data?' ]},
+        refinement:{ title:'✏️ Team Discussion Questions', items:[
+          '"Which root cause, if solved, would have the biggest cascading effect?"',
+          '"Do we already have the data to test these hypotheses?"',
+          '"What organisational barriers exist to accessing this data?"' ]} },
+      { num:3, title:'AI Idea Generation & Clustering', time:'⏱ 10 minutes',
+        note:'💡 <strong>Facilitator:</strong> This is the creative stage. After the AI generates ideas, use dot-voting: each person gets 3 dots to vote on favourites across all clusters.',
+        prompt: REG_P3,
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Are ideas specific enough to be actionable?',
+          'Does the scoring feel right?',
+          'Which idea gets the team most excited?' ]},
+        refinement:{ title:'✏️ Team Activity: Dot-Voting', items:[
+          'Give each participant 3 sticky dots (or digital votes)',
+          'Vote on favourite ideas across all clusters',
+          'Tally results and discuss the winner' ]} },
+      { num:4, title:'One-Page Pilot Brief', time:'⏱ 10 minutes',
+        note:'💡 <strong>Facilitator:</strong> The output should be detailed enough that a developer could build from it. Review each section critically.',
+        prompt: REG_P4,
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Is the user flow realistic for how this company actually works?',
+          'Does the sample data feel authentic?',
+          'Are the guardrails sufficient?',
+          'Would the success metrics prove value to leadership?' ]} },
+      { num:5, title:'Build the Application', time:'⏱ 15 minutes',
+        note:'💡 <strong>Facilitator:</strong> This generates a full prototype. Copy the code, save as <code>index.html</code>, open in browser. Review as a team.',
+        toolChoice: STAGE5_TOOLCHOICE_REG,
+        variants:{ same: REG_P5_SAME, coding: REG_P5_CODING },
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Does it look like something this company would actually ship?',
+          'Is the language appropriate for end users?',
+          'Does the data visualisation tell the right story?' ]},
+        refinement:{ title:'✏️ Team Activity', items:[
+          'Open prototype in browser and walk through the flow together',
+          'Each person writes: 1 thing that works, 1 thing to change, 1 thing missing' ]} },
+      { num:6, title:'Deploy & Review', time:'⏱ 5 minutes',
+        note:'💡 <strong>Facilitator:</strong> Wrap-up stage. Create the deployment note and demo script for stakeholder presentation.',
+        prompt: REG_P6,
+        lookFor:{ title:'🎯 Final Team Discussion', items:[
+          '"Would this solve the problem we started with?"',
+          '"Who needs to see this first?"',
+          '"What&apos;s the one thing that would make or break adoption?"' ]} }
+    ]
+  },
+
+  agentbuild: {
+    label: 'AgentBuild',
+    dropdownText: 'AgentBuild — multi-agent workflow design',
+    hint: 'Same discovery, but the output is a build-ready multi-agent architecture spec + diagram.',
+    emoji: '🤖',
+    title: '🤖 AgentBuild Workshop',
+    subtitle: 'From business challenge to a build-ready multi-agent design — in one session. Same Double Diamond discovery, but the output is an agent architecture spec your customer can build in their own platform.',
+    challengeHint: 'Be specific — agentic solutions fit best where there&apos;s a repeatable, multi-step workflow with judgment and tool use. The more context, the better the design prompts.',
+    footerName: 'AgentBuild Pipeline 🤖',
+    meta: { duration: '⏱ 1 hour', stages: '📋 7 Stages' },
+    diamond: [
+      { label:'◇ Discover', desc:'Stages 1–2 — explore the problem space' },
+      { label:'◆ Define',   desc:'Stages 3–4 — converge on the agentic opportunity' },
+      { label:'◇ Develop',  desc:'Stages 5–6 — design &amp; build the agent solution' },
+      { label:'◆ Deliver',  desc:'Stage 7 — map to platform &amp; plan rollout' }
+    ],
+    howTo: [
+      '<strong>Copy</strong> the prompt from each stage',
+      '<strong>Paste</strong> into the <strong>same conversation thread</strong> in your LLM (Claude, GPT, Gemini, M365 Copilot, etc.)',
+      '<strong>Review</strong> the output as a team — challenge the AI&apos;s assumptions',
+      '<strong>Refine</strong> — edit, add real-world context, decide together',
+      '<strong>Move to next stage</strong> — the AI keeps context across stages. No need to re-paste prior output (unless a <span class="placeholder-tag">PLACEHOLDER</span> asks for a team decision).'
+    ],
+    howToTip: '💡 <strong>Diagram tip:</strong> Stage 5 produces a <strong>Mermaid</strong> orchestration diagram. Paste it into <a href="https://mermaid.live" target="_blank" rel="noopener">mermaid.live</a> (or any Markdown tool that supports Mermaid) to render the agent flow visually for your readout.',
+    stages: [
+      { num:1, title:'Research & Discovery', time:'⏱ 10 minutes', phaseTag:'◇ Discover',
+        note:'💡 <strong>Facilitator:</strong> This maps the landscape. Pay special attention to the <strong>Workflow Snapshot</strong> — the end-to-end process is what a multi-agent system will eventually automate, so make sure the team agrees it&apos;s real.',
+        prompt: AG_P1,
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Are the personas realistic for this business?',
+          'Do the pain points match what the team actually experiences?',
+          'Does the workflow snapshot reflect how work really flows (steps, handoffs, systems)?',
+          'Are the success metrics measurable and achievable?' ]},
+        refinement:{ title:'✏️ Team Discussion Questions', items:[
+          '"Which persona feels the most pain today?"',
+          '"Where in the workflow do the most handoffs, waiting, or rework happen?"',
+          '"What workarounds are we already using that the AI didn&apos;t mention?"' ]} },
+      { num:2, title:'Root-Cause Analysis (Five Whys)', time:'⏱ 10 minutes', phaseTag:'◇ Discover',
+        note:'💡 <strong>Facilitator:</strong> The Five Whys reveals systemic root causes. Note which causes are <strong>automatable by an agentic workflow</strong> vs which need a human/org change — only the former are candidates for the agent design.',
+        prompt: AG_P2,
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Do the root causes ring true, or is the AI being too generic?',
+          'Which root causes are coordination / information / repetitive-work problems (agent-addressable)?',
+          'Which are structural / human / regulatory (NOT solved by agents)?',
+          'Is the test plan realistic — do we actually have access to that data?' ]},
+        refinement:{ title:'✏️ Team Discussion Questions', items:[
+          '"Which root cause, if solved, would have the biggest cascading effect?"',
+          '"Is this a problem agents can act on, or one only people/process change can fix?"',
+          '"Do we already have the data and systems to support an automated solution?"' ]} },
+      { num:3, title:'Agent Opportunity Mapping', time:'⏱ 10 minutes', phaseTag:'◆ Define',
+        note:'💡 <strong>Facilitator:</strong> This is the agentic-thinking stage. The AI decomposes the workflow into discrete tasks and classifies each as <strong>agent-suitable</strong>, <strong>human-only</strong>, or <strong>simple automation</strong>. Resist the urge to "agentify" everything — the goal is to find where agents genuinely add value. Use dot-voting to pick the workflow to carry forward.',
+        prompt: AG_P3,
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Is the task decomposition specific to this workflow, not generic?',
+          'Are the "agent-suitable" tasks genuinely things needing reasoning, retrieval, or multi-step tool use?',
+          'Could a single agent with tools do it — or is multiple agents truly justified?',
+          'Which candidate agent set gets the team most excited and is feasible with available data/systems?' ]},
+        refinement:{ title:'✏️ Team Activity: Dot-Voting', items:[
+          'Give each participant 3 votes',
+          'Vote on the candidate workflow + agent set to design in depth',
+          'Sanity-check: "Is this the simplest design that solves the problem?"' ]} },
+      { num:4, title:'Agent Solution Brief', time:'⏱ 10 minutes', phaseTag:'◆ Define',
+        note:'💡 <strong>Facilitator:</strong> This converges the chosen idea into a one-page brief — the agreed scope before deep design. Paste the winning workflow + agent set from the dot-vote into the placeholder. Review the human-in-the-loop points and guardrails critically.',
+        prompt: AG_P4,
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Is the workflow trigger and end-state crisp?',
+          'Are the high-level agent responsibilities distinct (no overlap, no gaps)?',
+          'Are the human-in-the-loop checkpoints in the right places?',
+          'Would the success metrics prove value to leadership?',
+          'Is anything important explicitly marked out-of-scope for the pilot?' ]} },
+      { num:5, title:'Multi-Agent Architecture Design', time:'⏱ 15 minutes', phaseTag:'◇ Develop',
+        note:'💡 <strong>Facilitator:</strong> This is the core deliverable — a build-ready, framework-agnostic agent design <em>plus a Mermaid orchestration diagram</em>. Render the diagram at <a href="https://mermaid.live" target="_blank" rel="noopener">mermaid.live</a> and walk the team through the end-to-end trace together.',
+        prompt: AG_P5_SAME,
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Is the orchestration pattern justified — and is it the simplest one that works?',
+          'Does each agent have a clear goal, I/O contract, tools, and autonomy level?',
+          'Are termination conditions and loop/cost guards defined (no runaway agents)?',
+          'Are tools clearly marked real vs simulated for the pilot?',
+          'Does the end-to-end walkthrough actually solve the original problem?' ]},
+        refinement:{ title:'✏️ Team Activity', items:[
+          'Render the Mermaid diagram and trace one real scenario through it',
+          'Each person notes: 1 thing that works, 1 risk, 1 thing missing',
+          'Stress-test the guardrails: "What happens when an agent is wrong or unsure?"' ]} },
+      { num:6, title:'Build the Agent Solution (Synthetic Data)', time:'⏱ 15 minutes', phaseTag:'◇ Develop',
+        note:'💡 <strong>Facilitator:</strong> This turns the Stage 5 design into something tangible the customer team builds themselves — either an interactive prototype that acts out the flow, or a working application whose agents really run. <strong>Both use synthetic data only; no enterprise systems are connected.</strong> Pick the path below before copying the prompt.',
+        toolChoice: STAGE6_TOOLCHOICE_AG,
+        variants:{ prototype: AG_P6_PROTOTYPE, realapp: AG_P6_REALAPP },
+        lookFor:{ title:'🎯 What to Look For', items:[
+          'Is it unmistakable that this uses synthetic data only, with nothing connected to live systems?',
+          'Does the build match the Stage 5 orchestration pattern and the Mermaid diagram?',
+          'Do the human-in-the-loop checkpoints behave the way the design intends?',
+          'Does at least one guardrail/fallback visibly trigger?',
+          '(Working app) Is the synthetic data layer cleanly separated so it could later point at real systems?',
+          '(Working app) Do the agents genuinely run (real reasoning/tool-calls), not just play a script?' ]},
+        refinement:{ title:'✏️ Team Activity', items:[
+          'Run each synthetic scenario together; at every checkpoint, decide as a group whether to approve the agent output.',
+          'Each person notes: 1 thing that&apos;s convincing, 1 thing missing, 1 risk it surfaces about the real build.' ]} },
+      { num:7, title:'Platform Mapping & Rollout', time:'⏱ 5 minutes', phaseTag:'◆ Deliver',
+        note:'💡 <strong>Facilitator:</strong> Wrap-up stage. Tell the AI which platform the customer will build on (Copilot Studio, Vertex/Gemini Agent Builder, LangGraph, CrewAI, AutoGen, OpenAI Agents SDK…) so it maps the framework-agnostic design onto that platform&apos;s native constructs, then produces the demo script and pilot plan.',
+        prompt: AG_P7,
+        lookFor:{ title:'🎯 Final Team Discussion', items:[
+          '"Would this agent system solve the problem we started with?"',
+          '"What security / autonomy approvals do we need before agents can act?"',
+          '"What&apos;s the one thing that would make or break adoption?"',
+          '"Who needs to see this first?"' ]} }
+    ]
+  }
+};
+
+const WORKSHOP_ORDER = ['regular', 'agentbuild'];
 
 // ─── State ───
 let workshopData = {};
+let selectedWorkshopId = 'regular';
 
+// ─── Theme ───
+function applyTheme(t) {
+  const theme = t === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('rapidbuild_theme', theme);
+  document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+
+// ─── Daily access code: marks R (82) + B (66) → "R{DD}B{YY}", e.g. R10B26 ───
 function todaysKey() {
   const n = new Date();
   const marks = [82, 66].map(v => String.fromCharCode(v));
@@ -762,7 +1148,35 @@ function todaysKey() {
   return marks[0] + day + marks[1] + year;
 }
 
+// ─── Workshop type dropdown ───
+function populateTypeDropdown() {
+  const sel = document.getElementById('workshopType');
+  sel.innerHTML = WORKSHOP_ORDER.map(id =>
+    `<option value="${id}">${WORKSHOPS[id].dropdownText}</option>`).join('');
+  sel.value = selectedWorkshopId;
+  updateTypeHint();
+}
+function updateTypeHint() {
+  const id = document.getElementById('workshopType').value;
+  document.getElementById('workshopTypeHint').innerHTML = WORKSHOPS[id].hint;
+}
+
+function goToAccess() {
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('accessScreen').classList.remove('hidden');
+  document.getElementById('accessCode').focus();
+}
+
 function showSetup() {
+  selectedWorkshopId = document.getElementById('workshopType').value || selectedWorkshopId;
+  const ws = WORKSHOPS[selectedWorkshopId];
+  sessionStorage.setItem('rapidbuild_type', selectedWorkshopId);
+
+  document.getElementById('welcomeTitle').innerHTML = ws.title;
+  document.getElementById('welcomeSubtitle').textContent = ws.subtitle;
+  document.getElementById('welcomeTypeLabel').textContent = ws.label;
+  document.getElementById('challengeHint').innerHTML = ws.challengeHint;
+
   document.getElementById('accessScreen').classList.add('hidden');
   document.getElementById('welcomeScreen').classList.remove('hidden');
   document.getElementById('customerName').focus();
@@ -779,43 +1193,100 @@ function unlockWorkshop() {
     showSetup();
     return;
   }
-
   error.textContent = 'Invalid access code. Check with the facilitator.';
   input.select();
 }
 
-function getStage5Tool() {
-  return document.querySelector('input[name="stage5Tool"]:checked')?.value || 'same';
+// ─── Stage rendering (data-driven) ───
+function currentWorkshop() { return WORKSHOPS[selectedWorkshopId]; }
+
+function renderHowTo(ws) {
+  const items = ws.howTo.map(li => `<li>${li}</li>`).join('');
+  const tip = ws.howToTip ? `<div class="tip">${ws.howToTip}</div>` : '';
+  document.getElementById('howTo').innerHTML =
+    `<h2>📖 How to Use This Handbook</h2><ol>${items}</ol>${tip}`;
 }
 
-function getPromptTemplate(stageNumber) {
-  if (stageNumber === 5) {
-    return stage5Prompts[getStage5Tool()];
-  }
-  return prompts[stageNumber];
+function renderDiamond(ws) {
+  const bar = document.getElementById('diamondBar');
+  if (!ws.diamond) { bar.style.display = 'none'; bar.innerHTML = ''; return; }
+  bar.style.display = 'flex';
+  bar.innerHTML = ws.diamond.map(p =>
+    `<div class="diamond-phase"><div class="ph-label">${p.label}</div><div class="ph-desc">${p.desc}</div></div>`).join('');
 }
 
-function populatePrompt(stageNumber) {
-  const el = document.getElementById('prompt' + stageNumber);
+function renderTOC(ws) {
+  document.getElementById('tocGrid').innerHTML = ws.stages.map((s, i) =>
+    `<a href="#stage${s.num}" onclick="openStage(${i})"><span class="num">${s.num}</span> ${s.title}</a>`).join('');
+}
+
+function buildToolChoice(s) {
+  const opts = s.toolChoice.options.map((o, k) => `
+    <label class="tool-option">
+      <input type="radio" name="stageTool_${s.num}" value="${o.value}" ${k === 0 ? 'checked' : ''} onchange="updateVariantPrompt(${s.num})">
+      <span><strong>${o.title}</strong>${o.desc}</span>
+    </label>`).join('');
+  const alertText = s.toolChoice.alert || '⚠️ <strong>Facilitator check:</strong> Confirm which tool participants should use before they copy this prompt.';
+  return `<div class="stage-alert">${alertText}</div>
+    <fieldset class="tool-choice"><legend>${s.toolChoice.legend}</legend>${opts}</fieldset>`;
+}
+
+function buildStage(s, i) {
+  const phaseTag = s.phaseTag ? ` <span class="stage-phase-tag">${s.phaseTag}</span>` : '';
+  const toolChoice = s.toolChoice ? buildToolChoice(s) : '';
+  const lookFor = `<div class="look-for"><h4>${s.lookFor.title}</h4><ul>${s.lookFor.items.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
+  const refinement = s.refinement ? `<div class="refinement"><h4>${s.refinement.title}</h4><ul>${s.refinement.items.map(x => `<li>${x}</li>`).join('')}</ul></div>` : '';
+  return `<div class="stage${i === 0 ? ' open' : ''}" id="stage${s.num}">
+    <div class="stage-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="stage-num">${s.num}</div>
+      <div><div class="stage-title">${s.title}${phaseTag}</div><div class="stage-time">${s.time}</div></div>
+      <div class="stage-toggle">▼</div>
+    </div>
+    <div class="stage-body">
+      <div class="note">${s.note}</div>
+      ${toolChoice}
+      <h3 class="section-head">Prompt</h3>
+      <div class="prompt-block" id="prompt${s.num}"><button class="copy-btn" onclick="copyPrompt('prompt${s.num}')">📋 Copy</button></div>
+      ${lookFor}
+      ${refinement}
+    </div>
+  </div>`;
+}
+
+function renderStages(ws) {
+  document.getElementById('stagesContainer').innerHTML = ws.stages.map((s, i) => buildStage(s, i)).join('');
+}
+
+// ─── Prompt population ───
+function selectedVariant(num) {
+  const el = document.querySelector(`input[name="stageTool_${num}"]:checked`);
+  return el ? el.value : null;
+}
+function templateFor(s) {
+  if (!s.variants) return s.prompt;
+  const v = selectedVariant(s.num) || Object.keys(s.variants)[0];
+  return s.variants[v];
+}
+function populatePrompt(s) {
+  const el = document.getElementById('prompt' + s.num);
   if (!el || !workshopData.name) return;
-
   const additionalBlock = workshopData.additional ? `\n**Additional Context:** ${workshopData.additional}\n` : '';
-  const text = getPromptTemplate(stageNumber)
+  const text = templateFor(s)
     .replace(/\{\{CUSTOMER\}\}/g, workshopData.name)
     .replace(/\{\{INDUSTRY\}\}/g, workshopData.industry || 'their')
     .replace(/\{\{CHALLENGE\}\}/g, workshopData.challenge)
     .replace(/\{\{ADDITIONAL\}\}/g, workshopData.additional || '')
     .replace(/\{\{ADDITIONAL_BLOCK\}\}/g, additionalBlock);
-
   const btn = el.querySelector('.copy-btn');
   el.textContent = text;
   el.prepend(btn);
 }
-
-function updateStage5Prompt() {
-  populatePrompt(5);
+function updateVariantPrompt(num) {
+  const s = currentWorkshop().stages.find(x => x.num === num);
+  if (s) populatePrompt(s);
 }
 
+// ─── Start / navigation ───
 function startWorkshop() {
   const name = document.getElementById('customerName').value.trim();
   const industry = document.getElementById('customerIndustry').value.trim();
@@ -828,29 +1299,35 @@ function startWorkshop() {
   }
 
   workshopData = { name, industry: industry || 'their', challenge, additional };
+  const ws = currentWorkshop();
 
-  // Populate header
+  // Header
+  document.getElementById('workshopTitle').innerHTML = ws.title;
+  document.getElementById('footerName').textContent = ws.footerName;
+  document.getElementById('headerDuration').textContent = ws.meta.duration;
+  document.getElementById('headerStages').textContent = ws.meta.stages;
   document.getElementById('headerCustomer').textContent = `Customer: ${name}`;
   document.getElementById('headerIndustry').textContent = `📍 ${industry || name}`;
   document.getElementById('contextChallenge').textContent = challenge + (additional ? '\n\nAdditional context: ' + additional : '');
 
-  // Generate prompts
-  for (let i = 1; i <= 6; i++) {
-    populatePrompt(i);
-  }
+  // Body (data-driven)
+  renderHowTo(ws);
+  renderDiamond(ws);
+  renderTOC(ws);
+  renderStages(ws);
+  ws.stages.forEach(populatePrompt);
 
-  // Switch screens
   document.getElementById('welcomeScreen').classList.add('hidden');
   document.getElementById('workshopScreen').classList.add('active');
   window.scrollTo(0, 0);
 
-  // Save to sessionStorage for back navigation
   sessionStorage.setItem('rapidbuild_data', JSON.stringify(workshopData));
+  sessionStorage.setItem('rapidbuild_type', selectedWorkshopId);
 }
 
 function goBack() {
-  document.getElementById('welcomeScreen').classList.remove('hidden');
   document.getElementById('workshopScreen').classList.remove('active');
+  document.getElementById('welcomeScreen').classList.remove('hidden');
   window.scrollTo(0, 0);
 }
 
@@ -861,15 +1338,8 @@ function openStage(idx) {
 }
 
 function exportPDF() {
-  // Expand all stages so they appear in print
-  document.querySelectorAll('.stage-body').forEach(b => {
-    b.style.display = 'block';
-    b.style.maxHeight = 'none';
-  });
-  // Small delay to let DOM update, then print
-  setTimeout(() => {
-    window.print();
-  }, 300);
+  document.querySelectorAll('.stage-body').forEach(b => { b.style.display = 'block'; b.style.maxHeight = 'none'; });
+  setTimeout(() => window.print(), 300);
 }
 
 function copyPrompt(id) {
@@ -882,50 +1352,61 @@ function copyPrompt(id) {
   });
 }
 
-// Restore from URL params first, then sessionStorage as fallback
+// ─── Init ───
 window.addEventListener('load', () => {
-  if (sessionStorage.getItem('rapidbuild_access') === '1') {
-    showSetup();
-  } else {
-    document.getElementById('accessCode').focus();
-  }
-
-  document.getElementById('accessCode').addEventListener('input', event => {
-    event.target.value = event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
-    document.getElementById('accessError').textContent = '';
-  });
-  document.getElementById('accessCode').addEventListener('keydown', event => {
-    if (event.key === 'Enter') unlockWorkshop();
-  });
+  applyTheme(localStorage.getItem('rapidbuild_theme') || 'light');
 
   const params = new URLSearchParams(window.location.search);
+
+  // Restore / preselect workshop type
+  const savedType = params.get('type') || sessionStorage.getItem('rapidbuild_type');
+  if (savedType && WORKSHOPS[savedType]) selectedWorkshopId = savedType;
+  populateTypeDropdown();
+  document.getElementById('workshopType').addEventListener('change', () => {
+    selectedWorkshopId = document.getElementById('workshopType').value;
+    updateTypeHint();
+  });
+
+  // Access code field behaviour
+  const codeEl = document.getElementById('accessCode');
+  codeEl.addEventListener('input', e => {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    document.getElementById('accessError').textContent = '';
+  });
+  codeEl.addEventListener('keydown', e => { if (e.key === 'Enter') unlockWorkshop(); });
+
+  // Pre-fill setup form from URL params or sessionStorage
   const urlCompany = params.get('company');
   const urlIndustry = params.get('industry');
   const urlChallenge = params.get('challenge');
   const urlContext = params.get('context');
-
   if (urlCompany || urlIndustry) {
-    // URL params take priority — pre-populate from URL
     if (urlCompany) document.getElementById('customerName').value = urlCompany;
     if (urlIndustry) document.getElementById('customerIndustry').value = urlIndustry;
     if (urlChallenge) document.getElementById('challengeText').value = urlChallenge;
     if (urlContext) document.getElementById('additionalContext').value = urlContext;
   } else {
-    // Fall back to sessionStorage
     const saved = sessionStorage.getItem('rapidbuild_data');
     if (saved) {
       const data = JSON.parse(saved);
-      document.getElementById('customerName').value = data.name;
-      document.getElementById('customerIndustry').value = data.industry;
-      document.getElementById('challengeText').value = data.challenge;
+      document.getElementById('customerName').value = data.name || '';
+      document.getElementById('customerIndustry').value = data.industry || '';
+      document.getElementById('challengeText').value = data.challenge || '';
       document.getElementById('additionalContext').value = data.additional || '';
     }
   }
 
-  // Enable/disable start button
+  // Gate: skip access screen if already unlocked this session
+  if (sessionStorage.getItem('rapidbuild_access') === '1') {
+    showSetup();
+  } else {
+    codeEl.focus();
+  }
+
+  // Enable/disable generate button
   const check = () => {
-    document.getElementById('btnStart').disabled = 
-      !document.getElementById('customerName').value.trim() || 
+    document.getElementById('btnStart').disabled =
+      !document.getElementById('customerName').value.trim() ||
       !document.getElementById('challengeText').value.trim();
   };
   document.getElementById('customerName').addEventListener('input', check);
